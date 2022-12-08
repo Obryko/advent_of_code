@@ -63,21 +63,20 @@ impl Day for Day3Of2022 {
     }
 
     fn task2(&mut self) -> String {
-        let mut skip: usize = 0;
-        let mut result: u32 = 0;
-        while skip < self.data.len() - 3 {
-            let first = self.get_all_from_rucksack(skip);
-            let second = self.get_all_from_rucksack(skip + 1);
-            let third = self.get_all_from_rucksack(skip + 2);
+        (0..self.data.len())
+            .step_by(3)
+            .map(|step| {
+                let first = self.get_all_from_rucksack(step);
+                let second = self.get_all_from_rucksack(step + 1);
+                let third = self.get_all_from_rucksack(step + 2);
 
-            result += first
-                .chars()
-                .find(|&char| second.contains(char) && third.contains(char))
-                .map(match_to_value)
-                .unwrap_or(0);
-            skip += 3;
-        }
-
-        result.to_string()
+                first
+                    .chars()
+                    .find(|&char| second.contains(char) && third.contains(char))
+                    .unwrap_or(' ')
+            })
+            .map(match_to_value)
+            .sum::<u32>()
+            .to_string()
     }
 }
