@@ -1,3 +1,5 @@
+extern crate core;
+
 use dotenv::dotenv;
 
 use aoc2015::*;
