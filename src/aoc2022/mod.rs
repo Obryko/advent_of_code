@@ -2,16 +2,19 @@ use advent_of_code::Day;
 use day1::*;
 use day2::*;
 use day3::*;
+use day4::*;
 
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 pub async fn run() {
     let mut day1 = Day1Of2022::new();
     let mut day2 = Day2Of2022::new();
     let mut day3 = Day3Of2022::new();
-    let mut aoc2022: Vec<&mut dyn Day> = vec![&mut day1, &mut day2, &mut day3];
+    let mut day4 = Day4Of2022::new();
+    let mut aoc2022: Vec<&mut dyn Day> = vec![&mut day1, &mut day2, &mut day3, &mut day4];
 
     let last = aoc2022.len() - 1;
     let d = &mut aoc2022[last];
