@@ -84,11 +84,9 @@ impl Day for Day5Of2022 {
     }
 
     fn task1(&mut self) -> String {
-        let mut board = self.board.clone();
-
         self.commands
             .iter()
-            .fold(board, |mut board, command| {
+            .fold(self.board.clone(), |mut board, command| {
                 for _ in 0..command.0 {
                     let value = board[command.1 - 1].pop().unwrap();
                     board[command.2 - 1].push(value);
@@ -100,11 +98,9 @@ impl Day for Day5Of2022 {
             .collect::<String>()
     }
     fn task2(&mut self) -> String {
-        let mut board = self.board.clone();
-
         self.commands
             .iter()
-            .fold(board, |mut board, command| {
+            .fold(self.board.clone(), |mut board, command| {
                 let mut values = Vec::new();
                 for _ in 0..command.0 {
                     let value = board[command.1 - 1].pop().unwrap();
