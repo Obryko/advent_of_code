@@ -11,7 +11,6 @@ impl SectionRange {
         let values = value
             .split('-')
             .map(|val| val.parse::<i32>().unwrap())
-            .take(2)
             .collect::<Vec<i32>>();
         SectionRange(values[0], values[1])
     }
