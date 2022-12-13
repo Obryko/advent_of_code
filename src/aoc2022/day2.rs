@@ -1,6 +1,3 @@
-use async_trait::async_trait;
-
-use advent_of_code::inputs;
 use advent_of_code::Day;
 
 #[derive(Debug, Copy, Clone)]
@@ -65,20 +62,23 @@ impl RockPaperScissors {
     }
 }
 
+#[derive(Default)]
 pub struct Day2Of2022 {
     data: Vec<(char, char)>,
 }
 
 impl Day2Of2022 {
     pub fn new() -> Self {
-        Self { data: Vec::new() }
+        Self::default()
     }
 }
 
-#[async_trait]
 impl Day for Day2Of2022 {
-    async fn init(&mut self) {
-        let data: String = inputs::get_day_input(2022, 2).await;
+    fn get_day(&self) -> (i32, i32) {
+        (2022, 2)
+    }
+
+    fn parse(&mut self, data: String) {
         let res = data
             .split('\n')
             .filter(|r| !r.is_empty())

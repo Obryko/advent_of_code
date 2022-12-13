@@ -1,10 +1,8 @@
-use async_trait::async_trait;
+use advent_of_code::Day;
 
-use advent_of_code::{inputs, Day};
-
-#[derive(Debug)]
 struct Command(usize, usize, usize);
 
+#[derive(Default)]
 pub struct Day5Of2022 {
     commands: Vec<Command>,
     board: Vec<Vec<char>>,
@@ -12,10 +10,7 @@ pub struct Day5Of2022 {
 
 impl Day5Of2022 {
     pub fn new() -> Self {
-        Self {
-            commands: Vec::new(),
-            board: Vec::new(),
-        }
+        Self::default()
     }
 
     fn set_commands(&mut self, value: String) {
@@ -70,10 +65,12 @@ impl Day5Of2022 {
     }
 }
 
-#[async_trait]
 impl Day for Day5Of2022 {
-    async fn init(&mut self) {
-        let data: String = inputs::get_day_input(2022, 5).await;
+    fn get_day(&self) -> (i32, i32) {
+        (2022, 5)
+    }
+
+    fn parse(&mut self, data: String) {
         let inputs = data.split("\n\n").collect::<Vec<&str>>();
 
         self.set_board(inputs[0].to_string());

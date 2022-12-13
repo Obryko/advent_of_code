@@ -1,22 +1,22 @@
-use async_trait::async_trait;
-
-use advent_of_code::inputs;
 use advent_of_code::Day;
 
+#[derive(Default)]
 pub struct Day1Of2022 {
     data: Vec<i32>,
 }
 
 impl Day1Of2022 {
     pub fn new() -> Self {
-        Self { data: Vec::new() }
+        Self::default()
     }
 }
 
-#[async_trait]
 impl Day for Day1Of2022 {
-    async fn init(&mut self) {
-        let data: String = inputs::get_day_input(2022, 1).await;
+    fn get_day(&self) -> (i32, i32) {
+        (2022, 1)
+    }
+
+    fn parse(&mut self, data: String) {
         let res: Vec<i32> = data
             .split("\n\n")
             .map(|elf| {

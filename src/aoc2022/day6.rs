@@ -1,8 +1,5 @@
 use std::collections::HashSet;
 
-use async_trait::async_trait;
-
-use advent_of_code::inputs;
 use advent_of_code::Day;
 
 #[derive(Default)]
@@ -27,10 +24,12 @@ impl Day6Of2022 {
     }
 }
 
-#[async_trait]
 impl Day for Day6Of2022 {
-    async fn init(&mut self) {
-        let data: String = inputs::get_day_input(2022, 6).await;
+    fn get_day(&self) -> (i32, i32) {
+        (2022, 6)
+    }
+
+    fn parse(&mut self, data: String) {
         self.data = data.split('\n').collect::<Vec<&str>>()[0].chars().collect();
     }
 

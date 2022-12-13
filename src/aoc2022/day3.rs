@@ -1,17 +1,15 @@
 use std::ops::Add;
 
-use async_trait::async_trait;
-
-use advent_of_code::inputs;
 use advent_of_code::Day;
 
+#[derive(Default)]
 pub struct Day3Of2022 {
     data: Vec<(String, String)>,
 }
 
 impl Day3Of2022 {
     pub fn new() -> Self {
-        Self { data: Vec::new() }
+        Self::default()
     }
 
     fn get_all_from_rucksack(&self, index: usize) -> String {
@@ -34,10 +32,12 @@ fn match_to_value(value: char) -> u32 {
     }
 }
 
-#[async_trait]
 impl Day for Day3Of2022 {
-    async fn init(&mut self) {
-        let data: String = inputs::get_day_input(2022, 3).await;
+    fn get_day(&self) -> (i32, i32) {
+        (2022, 3)
+    }
+
+    fn parse(&mut self, data: String) {
         let res = data
             .split('\n')
             .map(|rucksack| {

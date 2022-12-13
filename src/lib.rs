@@ -2,7 +2,13 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait Day {
-    async fn init(&mut self);
+    async fn init(&mut self) -> () {
+        let (year, day) = self.get_day();
+        let data: String = inputs::get_day_input(year, day).await;
+        self.parse(data);
+    }
+    fn get_day(&self) -> (i32, i32);
+    fn parse(&mut self, data: String);
     fn task1(&mut self) -> String;
     fn task2(&mut self) -> String;
 }
