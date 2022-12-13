@@ -122,3 +122,28 @@ impl Day for Day2Of2022 {
             .to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str = "A Y
+B X
+C Z";
+
+    #[test]
+    fn task_1() {
+        let mut day = Day2Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task1(), "15");
+    }
+
+    #[test]
+    fn task_2() {
+        let mut day = Day2Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task2(), "12");
+    }
+}

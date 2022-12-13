@@ -109,3 +109,34 @@ impl Day for Day5Of2022 {
             .collect::<String>()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str = "    [D]
+[N] [C]
+[Z] [M] [P]
+ 1   2   3
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2";
+
+    #[test]
+    fn task_1() {
+        let mut day = Day5Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task1(), "CMZ");
+    }
+
+    #[test]
+    fn task_2() {
+        let mut day = Day5Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task2(), "MCD");
+    }
+}

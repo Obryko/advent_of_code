@@ -37,3 +37,38 @@ impl Day for Day1Of2022 {
         self.data.iter().rev().take(3).sum::<i32>().to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str = "1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000";
+    #[test]
+    fn task_1() {
+        let mut day = Day1Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task1(), "24000");
+    }
+
+    #[test]
+    fn task_2() {
+        let mut day = Day1Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task2(), "45000");
+    }
+}

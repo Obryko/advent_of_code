@@ -83,3 +83,31 @@ impl Day for Day4Of2022 {
             .to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str = "2-4,6-8
+2-3,4-5
+5-7,7-9
+2-8,3-7
+6-6,4-6
+2-6,4-8";
+
+    #[test]
+    fn task_1() {
+        let mut day = Day4Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task1(), "2");
+    }
+
+    #[test]
+    fn task_2() {
+        let mut day = Day4Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task2(), "4");
+    }
+}

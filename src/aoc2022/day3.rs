@@ -80,3 +80,31 @@ impl Day for Day3Of2022 {
             .to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str = "vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw";
+
+    #[test]
+    fn task_1() {
+        let mut day = Day3Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task1(), "157");
+    }
+
+    #[test]
+    fn task_2() {
+        let mut day = Day3Of2022::new();
+        day.parse(INPUT.to_string());
+
+        assert_eq!(day.task2(), "70");
+    }
+}
