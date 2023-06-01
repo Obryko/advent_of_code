@@ -24,8 +24,9 @@ pub async fn run() {
     let mut day4 = Day4Of2022::new();
     let mut day5 = Day5Of2022::new();
     let mut day6 = Day6Of2022::new();
+    let mut day7 = Day7Of2022::new();
     let mut aoc2022: Vec<&mut (dyn Day + Send)> = vec![
-        &mut day1, &mut day2, &mut day3, &mut day4, &mut day5, &mut day6,
+        &mut day1, &mut day2, &mut day3, &mut day4, &mut day5, &mut day6, &mut day7,
     ];
 
     let last = aoc2022.len() - 1;
