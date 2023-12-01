@@ -13,6 +13,17 @@ pub trait Day {
     fn task2(&mut self) -> String;
 }
 
+pub async fn run_day<T: Day + ?Sized + Send>(day: &mut T) {
+    println!("----- Paring Day -----");
+    day.init().await;
+    println!("----- Task 1 -----");
+    let task1 = day.task1();
+    println!("Task 1: {}", task1);
+    println!("----- Task 2 -----");
+    let task2 = day.task2();
+    println!("Task 2: {}", task2);
+}
+
 pub mod inputs {
     use std::fs::{create_dir_all, File, OpenOptions};
     use std::io::{Read, Write};
@@ -42,6 +53,9 @@ pub mod inputs {
             .send()
             .await
             .unwrap_or_else(|err| panic!("Error while attempting to retrieve input data for {year} task of day {day}. Error: {err}"));
+        if res.status() != 200 {
+            panic!("Cannot retrieve input data for {year} task of day {day}. Status: {}", res.status());
+        }
 
         res.text().await.expect("Cannot parse body.")
     }
