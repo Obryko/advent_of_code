@@ -67,19 +67,14 @@ pub struct Day2Of2022 {
     data: Vec<(char, char)>,
 }
 
-impl Day2Of2022 {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 impl Day for Day2Of2022 {
     fn get_day(&self) -> (i32, i32) {
         (2022, 2)
     }
 
     fn parse(&mut self, data: String) {
-        let res = data
+        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
+        self.data = data
             .split('\n')
             .filter(|r| !r.is_empty())
             .map(|round| {
@@ -87,10 +82,9 @@ impl Day for Day2Of2022 {
                 (round.nth(0).unwrap(), round.nth_back(0).unwrap())
             })
             .collect();
-        self.data = res;
     }
 
-    fn task1(&mut self) -> String {
+    fn task1(&self) -> String {
         self.data
             .iter()
             .map(|(first, second)| {
@@ -104,7 +98,7 @@ impl Day for Day2Of2022 {
             .to_string()
     }
 
-    fn task2(&mut self) -> String {
+    fn task2(&self) -> String {
         self.data
             .iter()
             .map(|round| {
@@ -127,23 +121,17 @@ impl Day for Day2Of2022 {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "A Y
-B X
-C Z";
+    const INPUT: &str = "A Y\nB X\nC Z";
 
     #[test]
     fn task_1() {
-        let mut day = Day2Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day2Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task1(), "15");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day2Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day2Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task2(), "12");
     }
 }

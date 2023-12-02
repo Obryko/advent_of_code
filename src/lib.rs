@@ -1,27 +1,20 @@
-use async_trait::async_trait;
-
-#[async_trait]
 pub trait Day {
-    async fn init(&mut self) -> () {
-        let (year, day) = self.get_day();
-        let data: String = inputs::get_day_input(year, day).await;
-        self.parse(data);
+    fn new() -> Self where Self: Default {
+        Self::default()
     }
+
     fn get_day(&self) -> (i32, i32);
     fn parse(&mut self, data: String);
-    fn task1(&mut self) -> String;
-    fn task2(&mut self) -> String;
-}
-
-pub async fn run_day<T: Day + ?Sized + Send>(day: &mut T) {
-    println!("----- Paring Day -----");
-    day.init().await;
-    println!("----- Task 1 -----");
-    let task1 = day.task1();
-    println!("Task 1: {}", task1);
-    println!("----- Task 2 -----");
-    let task2 = day.task2();
-    println!("Task 2: {}", task2);
+    fn task1(&self) -> String;
+    fn task2(&self) -> String;
+    fn run(&self) -> () {
+        println!("----- Task 1 -----");
+        let task1 = self.task1();
+        println!("Task 1: {}", task1);
+        println!("----- Task 2 -----");
+        let task2 = self.task2();
+        println!("Task 2: {}", task2);
+    }
 }
 
 pub mod inputs {
@@ -60,7 +53,8 @@ pub mod inputs {
         res.text().await.expect("Cannot parse body.")
     }
 
-    pub async fn get_day_input(year: i32, day: i32) -> String {
+    pub async fn get_day_input((year, day): (i32, i32)) -> String {
+        println!("----- Load data for a Day {} Year {}-----", day, year);
         let mut file = get_day_file_or_create_if_not_exist(year, day);
         let mut result = String::new();
         file.read_to_string(&mut result).unwrap_or_else(|err| {

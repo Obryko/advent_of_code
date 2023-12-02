@@ -9,12 +9,9 @@ pub struct Day5Of2022 {
 }
 
 impl Day5Of2022 {
-    pub fn new() -> Self {
-        Self::default()
-    }
 
-    fn set_commands(&mut self, value: String) {
-        let commands = value
+    fn parse_commands(&mut self, value: String) {
+        self.commands = value
             .split('\n')
             .filter(|command| !command.is_empty())
             .map(|command| {
@@ -26,11 +23,10 @@ impl Day5Of2022 {
                 )
             })
             .collect();
-        self.commands = commands;
     }
 
-    fn set_board(&mut self, value: String) {
-        let board: Vec<Vec<char>> = value
+    fn parse_board(&mut self, value: String) {
+        self.board = value
             .split('\n')
             .filter(|row| !row.is_empty())
             .rev()
@@ -61,7 +57,6 @@ impl Day5Of2022 {
                 }
                 acc
             });
-        self.board = board;
     }
 }
 
@@ -71,13 +66,14 @@ impl Day for Day5Of2022 {
     }
 
     fn parse(&mut self, data: String) {
+        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
         let inputs = data.split("\n\n").collect::<Vec<&str>>();
 
-        self.set_board(inputs[0].to_string());
-        self.set_commands(inputs[1].to_string());
+        self.parse_board(inputs[0].to_string());
+        self.parse_commands(inputs[1].to_string());
     }
 
-    fn task1(&mut self) -> String {
+    fn task1(&self) -> String {
         self.commands
             .iter()
             .fold(self.board.clone(), |mut board, command| {
@@ -91,7 +87,7 @@ impl Day for Day5Of2022 {
             .map(|chars| chars.last().unwrap())
             .collect::<String>()
     }
-    fn task2(&mut self) -> String {
+    fn task2(&self) -> String {
         self.commands
             .iter()
             .fold(self.board.clone(), |mut board, command| {
@@ -114,29 +110,17 @@ impl Day for Day5Of2022 {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "    [D]
-[N] [C]
-[Z] [M] [P]
- 1   2   3
-
-move 1 from 2 to 1
-move 3 from 1 to 3
-move 2 from 2 to 1
-move 1 from 1 to 2";
+    const INPUT: &str = "    [D]\n[N] [C]\n[Z] [M] [P]\n 1   2   3\n\nmove 1 from 2 to 1\nmove 3 from 1 to 3\nmove 2 from 2 to 1\nmove 1 from 1 to 2";
 
     #[test]
     fn task_1() {
-        let mut day = Day5Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day5Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task1(), "CMZ");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day5Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day5Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task2(), "MCD");
     }
 }

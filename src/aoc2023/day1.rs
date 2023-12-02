@@ -5,12 +5,6 @@ pub struct Day1Of2023 {
     data: Vec<String>,
 }
 
-impl Day1Of2023 {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 const DIGITS: [(&str, i32); 10] = [
     ("ZERO", 0),
     ("ONE", 1),
@@ -61,13 +55,14 @@ impl Day for Day1Of2023 {
     }
 
     fn parse(&mut self, data: String) {
+        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
         self.data = data.lines().map(|line| line.to_string()).collect();
     }
 
-    fn task1(&mut self) -> String {
+    fn task1(&self) -> String {
         self.data.iter().map(get_digits_from_line).map(find_number_in_line).sum::<i32>().to_string()
     }
-    fn task2(&mut self) -> String {
+    fn task2(&self) -> String {
         self.data.iter().map(map_line_string_digits_into_digits).map(find_number_in_line).sum::<i32>().to_string()
     }
 }
@@ -81,16 +76,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day1Of2023::new();
-        day.parse(INPUT_1.to_string());
+        let mut day = Day1Of2023::new_by_data(INPUT_1.to_string());
 
         assert_eq!(day.task1(), "142");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day1Of2023::new();
-        day.parse(INPUT_2.to_string());
+        let mut day = Day1Of2023::new_by_data(INPUT_2.to_string());
 
         assert_eq!(day.task2(), "281");
     }

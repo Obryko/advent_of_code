@@ -47,27 +47,21 @@ pub struct Day4Of2022 {
     data: Vec<Pair>,
 }
 
-impl Day4Of2022 {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 impl Day for Day4Of2022 {
     fn get_day(&self) -> (i32, i32) {
         (2022, 4)
     }
 
     fn parse(&mut self, data: String) {
-        let res = data
+        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
+        self.data = data
             .split('\n')
             .filter(|pair| !pair.is_empty())
             .map(|pair| Pair::new(pair.to_string()))
             .collect();
-        self.data = res;
     }
 
-    fn task1(&mut self) -> String {
+    fn task1(&self) -> String {
         self.data
             .iter()
             .filter(|&pair| pair.contain())
@@ -75,7 +69,7 @@ impl Day for Day4Of2022 {
             .to_string()
     }
 
-    fn task2(&mut self) -> String {
+    fn task2(&self) -> String {
         self.data
             .iter()
             .filter(|&pair| pair.overlap())
@@ -88,26 +82,17 @@ impl Day for Day4Of2022 {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "2-4,6-8
-2-3,4-5
-5-7,7-9
-2-8,3-7
-6-6,4-6
-2-6,4-8";
+    const INPUT: &str = "2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8";
 
     #[test]
     fn task_1() {
-        let mut day = Day4Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day4Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task1(), "2");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day4Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day4Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task2(), "4");
     }
 }

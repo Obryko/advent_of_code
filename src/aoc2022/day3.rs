@@ -8,10 +8,6 @@ pub struct Day3Of2022 {
 }
 
 impl Day3Of2022 {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     fn get_all_from_rucksack(&self, index: usize) -> String {
         self.data
             .get(index)
@@ -38,17 +34,17 @@ impl Day for Day3Of2022 {
     }
 
     fn parse(&mut self, data: String) {
-        let res = data
+        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
+        self.data = data
             .split('\n')
             .map(|rucksack| {
                 let (first, second) = rucksack.split_at(rucksack.len() / 2);
                 (first.to_string(), second.to_string())
             })
             .collect();
-        self.data = res;
     }
 
-    fn task1(&mut self) -> String {
+    fn task1(&self) -> String {
         self.data
             .iter()
             .map(|(first, second)| {
@@ -62,7 +58,7 @@ impl Day for Day3Of2022 {
             .to_string()
     }
 
-    fn task2(&mut self) -> String {
+    fn task2(&self) -> String {
         (0..self.data.len())
             .step_by(3)
             .map(|step| {
@@ -85,26 +81,17 @@ impl Day for Day3Of2022 {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "vJrwpWtwJgWrhcsFMMfFFhFp
-jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-PmmdzqPrVvPwwTWBwg
-wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw";
+    const INPUT: &str = "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw";
 
     #[test]
     fn task_1() {
-        let mut day = Day3Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day3Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task1(), "157");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day3Of2022::new();
-        day.parse(INPUT.to_string());
-
+        let day = Day3Of2022::new().parse(INPUT.to_string());
         assert_eq!(day.task2(), "70");
     }
 }
