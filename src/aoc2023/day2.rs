@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use advent_of_code::Day;
 
-#[derive(Hash, Eq, PartialEq, Debug)]
+#[derive(Hash, Eq, Debug)]
 enum Color {
     RED(i32),
     GREEN(i32),
@@ -22,6 +22,14 @@ impl Color {
         }
     }
 
+    fn get_value(&self) -> i32 {
+        match self {
+            Color::RED(count) => *count,
+            Color::GREEN(count) => *count,
+            Color::BLUE(count) => *count,
+        }
+    }
+
     fn is_possible(&self) -> bool {
         match self {
             Color::GREEN(count) => *count <= MAX_GREEN,
@@ -31,12 +39,42 @@ impl Color {
     }
 }
 
+impl PartialEq for Color {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Color::RED(_) => match other {
+                Color::RED(_) => true,
+                _ => false,
+            },
+            Color::GREEN(_) => match other {
+                Color::GREEN(_) => true,
+                _ => false,
+            },
+            Color::BLUE(_) => match other {
+                Color::BLUE(_) => true,
+                _ => false,
+            },
+        }
+    }
+}
+
 #[derive(Default, Debug)]
 pub struct Day2Of2023 {
     data: HashMap<i32, Vec<HashSet<Color>>>,
 }
 
-impl Day2Of2023 {}
+impl Day2Of2023 {
+    fn get_max_in_round(rounds: &Vec<HashSet<Color>>, color: &Color) -> i32 {
+        rounds.iter()
+            .map(|round| {
+                let res = round.iter().find(|&cube| cube == color);
+                match res {
+                    Some(cube) => cube.get_value(),
+                    None => 1,
+                }
+            }).max().unwrap_or(1)
+    }
+}
 
 impl Day for Day2Of2023 {
     fn get_day(&self) -> (i32, i32) {
@@ -49,7 +87,6 @@ impl Day for Day2Of2023 {
             let game = line.split(":").collect::<Vec<&str>>();
             let game_number: i32 = game[0].rsplit_once(" ").unwrap().1.parse().unwrap();
             let rounds = game[1].split(";").into_iter().map(|round| {
-                // round.split(",").collect::<Vec<&str>>().iter().map(|cube| {
                 round.split(",").into_iter().map(|cube| {
                     let res = cube.trim().split(" ").collect::<Vec<&str>>();
                     let count = res[0].parse::<i32>().unwrap();
@@ -69,8 +106,14 @@ impl Day for Day2Of2023 {
             )
         ).map(|(game, _)| { game }).sum::<i32>().to_string()
     }
+
     fn task2(&self) -> String {
-        todo!()
+        self.data.iter().map(|(_, rounds)| {
+            let red = Self::get_max_in_round(rounds, &Color::RED(1));
+            let green = Self::get_max_in_round(rounds, &Color::GREEN(1));
+            let blue = Self::get_max_in_round(rounds, &Color::BLUE(1));
+            red * green * blue
+        }).sum::<i32>().to_string()
     }
 }
 
@@ -91,6 +134,6 @@ mod tests {
     fn task_2() {
         let mut day = Day2Of2023::new();
         day.parse(INPUT.to_string());
-        assert_eq!(day.task2(), "");
+        assert_eq!(day.task2(), "2286");
     }
 }
