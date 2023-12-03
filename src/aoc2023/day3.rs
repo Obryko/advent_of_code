@@ -1,26 +1,29 @@
 use std::collections::HashSet;
 use advent_of_code::Day;
 
-#[derive(Debug)]
-struct NumberSign(i32, HashSet<char>);
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
+struct SignWithPosition(char, usize, usize);
+
+#[derive(Debug, PartialEq, Eq)]
+struct NumberSign(i32, HashSet<SignWithPosition>);
 
 #[derive(Default)]
 pub struct Day3Of2023 {
     data: Vec<NumberSign>,
 }
 
-fn check_neighbors_in_grid(grid: &Vec<Vec<char>>, row_index: i32, col_index: i32) -> HashSet<char> {
-    let mut neighbors = HashSet::new();
+fn check_neighbors_in_grid(grid: &Vec<Vec<char>>, row_index: i32, col_index: i32) -> HashSet<SignWithPosition> {
+    let mut neighbors: HashSet<SignWithPosition> = HashSet::new();
     for row in (row_index - 1)..=(row_index + 1) {
         for col in (col_index - 1)..=(col_index + 1) {
             match (row, col) {
                 (r, c) if r == row_index && c == col_index => continue,
                 (r, c) if r < 0 || c < 0 => continue,
-                (r, c) if r as usize > grid.len()-1 || c as usize > grid[0].len()-1 => continue,
-                (r,c) => {
+                (r, c) if r as usize > grid.len() - 1 || c as usize > grid[0].len() - 1 => continue,
+                (r, c) => {
                     let value = grid[r as usize][c as usize];
                     if !(value.is_digit(10) || value.eq(&'.')) {
-                        neighbors.insert(value);
+                        neighbors.insert(SignWithPosition(value, r as usize, c as usize));
                     }
                 }
             }
@@ -58,7 +61,6 @@ impl Day for Day3Of2023 {
                 res.push(NumberSign(num.parse::<i32>().unwrap(), signs));
             }
         }
-        println!("{:?}", res);
         self.data = res;
     }
 
@@ -70,7 +72,24 @@ impl Day for Day3Of2023 {
     }
 
     fn task2(&self) -> String {
-        todo!()
+        self.data
+            .iter()
+            .filter(|number_sign| !number_sign.1.is_empty() && number_sign.1.iter().any(|sign| sign.0 == '*'))
+            .flat_map(|number_sign| number_sign.1.iter().collect::<Vec<&SignWithPosition>>())
+            .collect::<HashSet<&SignWithPosition>>()
+            .iter()
+            .map(|sign| {
+                let gears = self.data.iter()
+                    .filter(|number_sign|
+                        !number_sign.1.is_empty()
+                            && number_sign.1.iter().any(|other| sign.1 == other.1 && sign.2 == other.2))
+                    .map(|number_sign| number_sign.0).collect::<Vec<i32>>();
+                if gears.is_empty() || gears.len() == 1 {
+                    return 0;
+                }
+                gears.iter().fold(1, |acc, gear| acc * gear)
+            }).sum::<i32>()
+            .to_string()
     }
 }
 
@@ -91,6 +110,6 @@ mod tests {
     fn task_2() {
         let mut day = Day3Of2023::new();
         day.parse(INPUT.to_string());
-        assert_eq!(day.task2(), "");
+        assert_eq!(day.task2(), "467835");
     }
 }
