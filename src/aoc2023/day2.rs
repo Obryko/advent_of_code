@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use advent_of_code::Day;
 
-#[derive(Hash, Eq, Debug)]
+#[derive(Hash, Eq, PartialEq, Debug)]
 enum Color {
     RED(i32),
     GREEN(i32),
@@ -37,23 +37,12 @@ impl Color {
             Color::BLUE(count) => *count <= MAX_BLUE,
         }
     }
-}
 
-impl PartialEq for Color {
-    fn eq(&self, other: &Self) -> bool {
+    fn eq_to_string(&self, color: &str) -> bool {
         match self {
-            Color::RED(_) => match other {
-                Color::RED(_) => true,
-                _ => false,
-            },
-            Color::GREEN(_) => match other {
-                Color::GREEN(_) => true,
-                _ => false,
-            },
-            Color::BLUE(_) => match other {
-                Color::BLUE(_) => true,
-                _ => false,
-            },
+            Color::RED(_) => color == "red",
+            Color::GREEN(_) => color == "green",
+            Color::BLUE(_) => color == "blue",
         }
     }
 }
@@ -64,10 +53,10 @@ pub struct Day2Of2023 {
 }
 
 impl Day2Of2023 {
-    fn get_max_in_round(rounds: &Vec<HashSet<Color>>, color: &Color) -> i32 {
+    fn get_max_in_round(rounds: &Vec<HashSet<Color>>, color: &str) -> i32 {
         rounds.iter()
             .map(|round| {
-                let res = round.iter().find(|&cube| cube == color);
+                let res = round.iter().find(|&cube| cube.eq_to_string(color));
                 match res {
                     Some(cube) => cube.get_value(),
                     None => 1,
@@ -109,9 +98,9 @@ impl Day for Day2Of2023 {
 
     fn task2(&self) -> String {
         self.data.iter().map(|(_, rounds)| {
-            let red = Self::get_max_in_round(rounds, &Color::RED(1));
-            let green = Self::get_max_in_round(rounds, &Color::GREEN(1));
-            let blue = Self::get_max_in_round(rounds, &Color::BLUE(1));
+            let red = Self::get_max_in_round(rounds, "red");
+            let green = Self::get_max_in_round(rounds, "green");
+            let blue = Self::get_max_in_round(rounds, "blue");
             red * green * blue
         }).sum::<i32>().to_string()
     }
