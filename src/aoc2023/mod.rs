@@ -6,6 +6,7 @@ use crate::aoc2023::day2::Day2Of2023;
 
 mod day1;
 mod day2;
+mod day3;
 
 
 pub fn get_year_days() -> HashMap<usize, Box<dyn Day>> {

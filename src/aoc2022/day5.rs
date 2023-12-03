@@ -66,7 +66,6 @@ impl Day for Day5Of2022 {
     }
 
     fn parse(&mut self, data: String) {
-        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
         let inputs = data.split("\n\n").collect::<Vec<&str>>();
 
         self.parse_board(inputs[0].to_string());

@@ -55,7 +55,6 @@ impl Day for Day1Of2023 {
     }
 
     fn parse(&mut self, data: String) {
-        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
         self.data = data.lines().map(|line| line.to_string()).collect();
     }
 

@@ -73,7 +73,6 @@ impl Day for Day2Of2022 {
     }
 
     fn parse(&mut self, data: String) {
-        println!("----- Parsing data for a Day {} Year {}-----", self.get_day().1, self.get_day().0);
         self.data = data
             .split('\n')
             .filter(|r| !r.is_empty())
