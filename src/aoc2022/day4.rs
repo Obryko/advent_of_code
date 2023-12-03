@@ -86,13 +86,15 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let day = Day4Of2022::new().parse(INPUT.to_string());
+        let mut day = Day4Of2022::new();
+        day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "2");
     }
 
     #[test]
     fn task_2() {
-        let day = Day4Of2022::new().parse(INPUT.to_string());
+        let mut day = Day4Of2022::new();
+        day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "4");
     }
 }

@@ -53,13 +53,15 @@ $ ls
 
     #[test]
     fn task_1() {
-        let day = Day7Of2022::new().parse(INPUT.to_string());
+        let mut day = Day7Of2022::new();
+        day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "95437");
     }
 
     #[test]
     fn task_2() {
-        let day = Day7Of2022::new().parse(INPUT.to_string());
+        let mut day = Day7Of2022::new();
+        day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "");
     }
 }

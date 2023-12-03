@@ -76,14 +76,16 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day1Of2023::new_by_data(INPUT_1.to_string());
+        let mut day = Day1Of2023::new();
+        day.parse(INPUT_1.to_string());
 
         assert_eq!(day.task1(), "142");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day1Of2023::new_by_data(INPUT_2.to_string());
+        let mut day = Day1Of2023::new();
+        day.parse(INPUT_2.to_string());
 
         assert_eq!(day.task2(), "281");
     }
