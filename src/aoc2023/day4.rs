@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+use std::ops::Add;
 use advent_of_code::Day;
 
 #[derive(Debug)]
@@ -18,9 +20,12 @@ impl BingoCard {
         numbers.split_whitespace().map(|n| n.parse().unwrap()).collect::<Vec<i32>>()
     }
 
+    fn count_won_numbers(&self) -> usize {
+        self.numbers.iter().filter(|n| self.winning_number.contains(n)).collect::<Vec<_>>().len()
+    }
+
     fn count_points(&self) -> i32 {
-        let matches = self.numbers.iter().filter(|n| self.winning_number.contains(n)).collect::<Vec<_>>().len();
-        match matches {
+        match self.count_won_numbers() {
             0 => 0,
             x => 2_i32.pow((x - 1) as u32)
         }
@@ -54,7 +59,16 @@ impl Day for Day4Of2023 {
     }
 
     fn task2(&self) -> String {
-        todo!()
+        let mut data = self.data.iter().map(|(game, _)| (*game, 1)).collect::<HashMap<usize, i32>>();
+        for (game, card) in self.data.iter() {
+            for x in 1..=card.count_won_numbers() {
+                let cards = data.get(&(game + x));
+                if let Some(value) = cards {
+                    data.insert(game + x, value.add(data.get(game).unwrap_or(&1)));
+                }
+            }
+        }
+        data.iter().map(|(_, card)| card).sum::<i32>().to_string()
     }
 }
 
@@ -80,6 +94,6 @@ mod tests {
     fn task_2() {
         let mut day = Day4Of2023::new();
         day.parse(INPUT.to_string());
-        assert_eq!(day.task2(), "todo!()");
+        assert_eq!(day.task2(), "30");
     }
 }
