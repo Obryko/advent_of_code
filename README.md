@@ -15,18 +15,18 @@
 
 ### 2022
 
-1. [Description](https://adventofcode.com/2022/day/1) | [Solution](aoc2022/day1.rs)
-2. [Description](https://adventofcode.com/2022/day/2) | [Solution](aoc2022/day2.rs)
-3. [Description](https://adventofcode.com/2022/day/3) | [Solution](aoc2022/day3.rs)
-4. [Description](https://adventofcode.com/2022/day/4) | [Solution](aoc2022/day4.rs)
-5. [Description](https://adventofcode.com/2022/day/5) | [Solution](aoc2022/day5.rs)
-6. [Description](https://adventofcode.com/2022/day/6) | [Solution](aoc2022/day6.rs)
+1. [Description](https://adventofcode.com/2022/day/1) | [Solution](src/aoc2022/day1.rs)
+2. [Description](https://adventofcode.com/2022/day/2) | [Solution](src/aoc2022/day2.rs)
+3. [Description](https://adventofcode.com/2022/day/3) | [Solution](src/aoc2022/day3.rs)
+4. [Description](https://adventofcode.com/2022/day/4) | [Solution](src/aoc2022/day4.rs)
+5. [Description](https://adventofcode.com/2022/day/5) | [Solution](src/aoc2022/day5.rs)
+6. [Description](https://adventofcode.com/2022/day/6) | [Solution](src/aoc2022/day6.rs)
 
 ### 2023
 
-1. [Description](https://adventofcode.com/2023/day/1) | [Solution](aoc2023/day1.rs)
-2. [Description](https://adventofcode.com/2023/day/2) | [Solution](aoc2023/day2.rs)
-3. [Description](https://adventofcode.com/2023/day/3) | [Solution](aoc2023/day3.rs)
-4. [Description](https://adventofcode.com/2023/day/4) | [Solution](aoc2023/day4.rs)
+1. [Description](https://adventofcode.com/2023/day/1) | [Solution](src/aoc2023/day1.rs)
+2. [Description](https://adventofcode.com/2023/day/2) | [Solution](src/aoc2023/day2.rs)
+3. [Description](https://adventofcode.com/2023/day/3) | [Solution](src/aoc2023/day3.rs)
+4. [Description](https://adventofcode.com/2023/day/4) | [Solution](src/aoc2023/day4.rs)
 
 Inspired by [@UncleScientist](https://github.com/UncleScientist/aoclib-rs)
