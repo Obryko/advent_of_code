@@ -16,11 +16,11 @@ mod aoc2023;
 async fn main() {
     dotenv().ok();
     let args: Vec<String> = env::args().collect();
-    let year_value = match args[1].parse::<usize>() {
+    let year_value = match args.get(1).unwrap_or(&"0".to_string()).parse::<usize>() {
         Ok(y) if y >= 2015 && y<= 2023 => Some(y),
         _ => None
     };
-    let day_value = match args[2].parse::<usize>() {
+    let day_value = match args.get(2).unwrap_or(&"0".to_string()).parse::<usize>() {
         Ok(d) if d >= 1 && d <= 25 => Some(d),
         _ => None
     };
