@@ -27,5 +27,6 @@
 2. [Description](https://adventofcode.com/2023/day/2) | [Solution](src/aoc2023/day2.rs)
 3. [Description](https://adventofcode.com/2023/day/3) | [Solution](src/aoc2023/day3.rs)
 4. [Description](https://adventofcode.com/2023/day/4) | [Solution](src/aoc2023/day4.rs)
+4. [Description](https://adventofcode.com/2023/day/5) | [Solution](src/aoc2023/day5.rs)
 
 Inspired by [@UncleScientist](https://github.com/UncleScientist/aoclib-rs)

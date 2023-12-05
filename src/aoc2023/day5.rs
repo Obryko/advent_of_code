@@ -1,8 +1,10 @@
 use std::collections::HashMap;
+use std::ops::Range;
 
 use advent_of_code::Day;
+use pariter::{IteratorExt, scope};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 struct CategoryMap {
     destination: i64,
     source: i64,
@@ -45,6 +47,7 @@ struct Garden {
     humidity_to_location: Vec<CategoryMap>,
 }
 
+
 impl Garden {
     pub fn new(categories: HashMap<&str, String>) -> Self {
         Self {
@@ -61,12 +64,20 @@ impl Garden {
     fn category_map_list_from_string(string: &String) -> Vec<CategoryMap> {
         string.split("\n").map(|v| CategoryMap::from_string(v.to_string())).collect()
     }
+
+    pub fn get_location_for_seed(&self, seed: i64) -> i64 {
+        let soil = get_destination_for_source(&self.seed_to_soil, seed);
+        let fertilizer = get_destination_for_source(&self.soil_to_fertilizer, soil);
+        let water = get_destination_for_source(&self.fertilizer_to_water, fertilizer);
+        let light = get_destination_for_source(&self.water_to_light, water);
+        let temperature = get_destination_for_source(&self.light_to_temperature, light);
+        let humidity = get_destination_for_source(&self.temperature_to_humidity, temperature);
+        get_destination_for_source(&self.humidity_to_location, humidity)
+    }
 }
 
 fn get_destination_for_source(mapper: &Vec<CategoryMap>, source: i64) -> i64 {
-    *mapper.iter().filter_map(|v| {
-        v.get_destination_for_source(source)
-    }).collect::<Vec<_>>().get(0).unwrap_or(&source)
+    mapper.iter().find_map(|v| v.get_destination_for_source(source)).unwrap_or(source)
 }
 
 #[derive(Default, Debug)]
@@ -88,24 +99,37 @@ impl Day for Day5Of2023 {
             .filter_map(|category| category.split_once("map:\n").map(|(name, mapper)| (name.trim(), mapper.trim().to_string())))
             .collect::<HashMap<&str, String>>();
         self.garden = Garden::new(categories_mappers);
-
-        println!()
     }
 
     fn task1(&self) -> String {
         self.seeds.iter()
-            .map(|seed| get_destination_for_source(&self.garden.seed_to_soil, *seed))
-            .map(|soil| get_destination_for_source(&self.garden.soil_to_fertilizer, soil))
-            .map(|fertilizer| get_destination_for_source(&self.garden.fertilizer_to_water, fertilizer))
-            .map(|water| get_destination_for_source(&self.garden.water_to_light, water))
-            .map(|light| get_destination_for_source(&self.garden.light_to_temperature, light))
-            .map(|temperature| get_destination_for_source(&self.garden.temperature_to_humidity, temperature))
-            .map(|humidity| get_destination_for_source(&self.garden.humidity_to_location, humidity))
+            .map(|seed| self.garden.get_location_for_seed(*seed))
             .min().unwrap().to_string()
     }
 
     fn task2(&self) -> String {
-        todo!()
+        scope(|s| {
+            (0..(self.seeds.len() / 2))
+                .map(|i| i * 2)
+                .map(|i| {
+                    let start = *self.seeds.get(i).unwrap();
+                    let range = *self.seeds.get(i + 1).unwrap();
+                    start..(start + range - 1)
+                })
+                .parallel_map_scoped_custom(s, |o| o.threads(16), |seeds: Range<i64>| {
+                    println!("Start seeds range {:?}", seeds);
+                    let min = seeds.fold(i64::MAX,|acc,seed| {
+                        let location = self.garden.get_location_for_seed(seed);
+                        match location.le(&acc) {
+                            true => location,
+                            false => acc
+                        }
+                    });
+                    println!("{:?}", min);
+                    return min;
+                })
+                .min().unwrap().to_string()
+        }).unwrap()
     }
 }
 
@@ -158,6 +182,6 @@ mod tests {
     fn task_2() {
         let mut day = Day5Of2023::new();
         day.parse(INPUT.to_string());
-        assert_eq!(day.task2(), "");
+        assert_eq!(day.task2(), "46");
     }
 }
