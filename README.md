@@ -9,12 +9,12 @@
 | `cargo run -- [year]`            | run with input for a last day of the year      | `cargo run -- 2023`        |
 | `cargo run -- [year] [day]`      | run with input for the day                     | `cargo run -- 2023 1`      |
 
-
 ## Solutions
 
 ### 2015
 
 ### 2022
+
 1. [Description](https://adventofcode.com/2022/day/1) | [Solution](src/aoc2022/day1.rs)
 2. [Description](https://adventofcode.com/2022/day/2) | [Solution](src/aoc2022/day2.rs)
 3. [Description](https://adventofcode.com/2022/day/3) | [Solution](src/aoc2022/day3.rs)
@@ -23,10 +23,12 @@
 6. [Description](https://adventofcode.com/2022/day/6) | [Solution](src/aoc2022/day6.rs)
 
 ### 2023
+
 1. [Description](https://adventofcode.com/2023/day/1) | [Solution](src/aoc2023/day1.rs)
 2. [Description](https://adventofcode.com/2023/day/2) | [Solution](src/aoc2023/day2.rs)
 3. [Description](https://adventofcode.com/2023/day/3) | [Solution](src/aoc2023/day3.rs)
 4. [Description](https://adventofcode.com/2023/day/4) | [Solution](src/aoc2023/day4.rs)
-4. [Description](https://adventofcode.com/2023/day/5) | [Solution](src/aoc2023/day5.rs)
+5. [Description](https://adventofcode.com/2023/day/5) | [Solution](src/aoc2023/day5.rs)
+6. [Description](https://adventofcode.com/2023/day/6) | [Solution](src/aoc2023/day6.rs)
 
 Inspired by [@UncleScientist](https://github.com/UncleScientist/aoclib-rs)
