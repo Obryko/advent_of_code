@@ -5,6 +5,7 @@ use advent_of_code::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Ord, PartialOrd, Copy, Clone)]
 enum Card {
+    JOKER = 1,
     TWO = 2,
     THREE = 3,
     FOUR = 4,
@@ -39,6 +40,13 @@ impl Card {
             _ => panic!("Invalid card")
         }
     }
+
+    fn jack_to_joker(&self) -> &Card {
+        match self {
+            Card::JACK => &Card::JOKER,
+            _ => self
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Ord, PartialOrd)]
@@ -52,7 +60,7 @@ enum HandType {
     HighCard = 0,
 }
 
-#[derive(Debug, Eq, Ord)]
+#[derive(Debug)]
 struct Hand {
     cards: [Card; 5],
     bid: i32,
@@ -66,12 +74,9 @@ impl Hand {
         }
     }
 
-    fn get_type(&self) -> HandType {
-        let mut types: HashMap<&Card, usize> = HashMap::new();
-        self.cards.iter().for_each(|card| *types.entry(card).or_insert(0) += 1);
-
+    fn get_type_without_joker(types: HashMap<Card, usize>) -> HandType {
         match types.values().collect::<Vec<&usize>>() {
-            values if values.len() == 5=> HandType::HighCard,
+            values if values.len() == 5 => HandType::HighCard,
             values if values.len() == 4 => HandType::OnePair,
             values if values.len() == 1 => HandType::FiveOfAKind,
             values if values.len() == 2 => match (values[0], values[1]) {
@@ -79,12 +84,34 @@ impl Hand {
                 (3, 2) | (2, 3) => HandType::FullHouse,
                 _ => panic!("Invalid type!")
             },
-            values if values.len() == 3 => match (values[0],values[1],values[2]) {
+            values if values.len() == 3 => match (values[0], values[1], values[2]) {
                 (3, 1, 1) | (1, 1, 3) | (1, 3, 1) => HandType::ThreeOfAKind,
                 (2, 2, 1) | (1, 2, 2) | (2, 1, 2) => HandType::TwoPair,
                 _ => panic!("Invalid type!")
             },
             _ => panic!("Invalid type!")
+        }
+    }
+    fn get_type_with_joker(mut types: HashMap<Card, usize>) -> HandType {
+        let jokers = types.remove(&Card::JOKER).unwrap_or(0);
+
+        if types.is_empty() {
+            types.insert(Card::JOKER, jokers);
+        } else {
+            let card = types.iter().max_by_key(|&(_, i)| i).map(|(&card, _)| card).unwrap();
+            types.entry(card).and_modify(|i| *i += jokers);
+        }
+
+        Hand::get_type_without_joker(types)
+    }
+
+    fn get_type(&self) -> HandType {
+        let mut types: HashMap<Card, usize> = HashMap::new();
+        self.cards.iter().for_each(|&card| *types.entry(card).or_insert(0) += 1);
+
+        match types.contains_key(&Card::JOKER) {
+            true => Hand::get_type_with_joker(types),
+            false => Hand::get_type_without_joker(types)
         }
     }
 
@@ -101,51 +128,14 @@ impl Hand {
     fn compare_types(&self, other: &Hand) -> Ordering {
         self.get_type().cmp(&other.get_type())
     }
-}
 
-impl PartialEq<Self> for Hand {
-    fn eq(&self, other: &Self) -> bool {
-        self.compare_types(other) == Ordering::Equal && self.compare_cards(other) == Ordering::Equal
-    }
-}
-
-impl PartialOrd<Self> for Hand {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        match (self, other) {
-            (s, o) if s.eq(&o) => Some(Ordering::Equal),
-            (s, o) if s.gt(o) => Some(Ordering::Greater),
-            (s, o) if s.lt(o) => Some(Ordering::Less),
-            _ => None,
-        }
-    }
-
-    fn lt(&self, other: &Self) -> bool {
-        match self.compare_types(other) {
-            Ordering::Less => true,
-            Ordering::Equal => self.compare_cards(other) == Ordering::Less,
-            _ => false,
-        }
-    }
-
-    fn le(&self, other: &Self) -> bool {
-        match self.partial_cmp(other) {
-            Some(Ordering::Equal) | Some(Ordering::Less) => true,
-            _ => false,
-        }
-    }
-
-    fn gt(&self, other: &Self) -> bool {
-        match self.compare_types(other) {
-            Ordering::Greater => true,
-            Ordering::Equal => self.compare_cards(other) == Ordering::Greater,
-            _ => false,
-        }
-    }
-
-    fn ge(&self, other: &Self) -> bool {
-        match self.partial_cmp(other) {
-            Some(Ordering::Equal) | Some(Ordering::Greater) => true,
-            _ => false,
+    fn compare(&self, other: &Hand) -> Ordering {
+        match (self.compare_types(other), self.compare_cards(other)) {
+            (Ordering::Equal, Ordering::Equal) => Ordering::Equal,
+            (Ordering::Equal, Ordering::Greater) => Ordering::Greater,
+            (Ordering::Equal, Ordering::Less) => Ordering::Less,
+            (Ordering::Greater, _) => Ordering::Greater,
+            (Ordering::Less, _) => Ordering::Less,
         }
     }
 }
@@ -175,7 +165,7 @@ impl Day for Day7Of2023 {
                     .map(|(hand, bid)| Hand::new(hand, bid))
                     .unwrap())
             .collect();
-        self.data.sort();
+        self.data.sort_by(|a, b| a.compare(b));
     }
 
     fn task1(&self) -> String {
@@ -185,7 +175,14 @@ impl Day for Day7Of2023 {
     }
 
     fn task2(&self) -> String {
-        todo!()
+        let mut data = self.data.iter().clone().map(|hand| Hand {
+            cards: hand.cards.map(|c| *c.jack_to_joker()),
+            bid: hand.bid,
+        }).collect::<Vec<Hand>>();
+        data.sort_by(|a, b| a.compare(b));
+        data.iter().enumerate()
+            .map(|(i, hand)| (i as i32 + 1) * hand.bid)
+            .sum::<i32>().to_string()
     }
 }
 
@@ -206,6 +203,6 @@ mod tests {
     fn task_2() {
         let mut day = Day7Of2023::new();
         day.parse(INPUT.to_string());
-        assert_eq!(day.task2(), "");
+        assert_eq!(day.task2(), "5905");
     }
 }
