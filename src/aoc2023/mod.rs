@@ -7,6 +7,7 @@ use crate::aoc2023::day3::Day3Of2023;
 use crate::aoc2023::day4::Day4Of2023;
 use crate::aoc2023::day5::Day5Of2023;
 use crate::aoc2023::day6::Day6Of2023;
+use crate::aoc2023::day7::Day7Of2023;
 
 mod day1;
 mod day2;
@@ -14,6 +15,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 
 pub fn get_year_days() -> HashMap<usize, Box<dyn Day>> {
@@ -24,6 +26,7 @@ pub fn get_year_days() -> HashMap<usize, Box<dyn Day>> {
     days.insert(4, Box::new(Day4Of2023::new()));
     days.insert(5, Box::new(Day5Of2023::new()));
     days.insert(6, Box::new(Day6Of2023::new()));
+    days.insert(7, Box::new(Day7Of2023::new()));
 
     days
 }
