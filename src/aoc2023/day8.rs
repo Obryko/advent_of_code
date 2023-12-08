@@ -45,13 +45,14 @@ pub struct Day8Of2023 {
 impl Day8Of2023 {
     fn find_end_node_value<'a, F: Fn(&Node) -> bool + 'a>(&self, start_node: Node, is_end_node: F) -> usize {
         let mut current_node = start_node;
-        let mut counter: usize = 0;
-        for &step in self.steps.iter().cycle() {
-            current_node = self.map.get(&current_node).map(|e| e.get(step)).unwrap();
-            counter += 1;
-            if is_end_node(&current_node) { break; }
-        }
-        counter
+        self.steps.iter()
+            .cycle()
+            .position(|&step| {
+                current_node = self.map.get(&current_node).map(|e| e.get(step)).unwrap();
+                is_end_node(&current_node)
+            })
+            .map(|pos| pos+1)
+            .unwrap_or(0)
     }
 }
 
@@ -86,16 +87,15 @@ impl Day for Day8Of2023 {
     }
 
     fn task1(&self) -> String {
-        let start_node = Node("AAA".to_string());
-        let end_node = &Node("ZZZ".to_string());
-        self.find_end_node_value(start_node, |n| n.eq(&end_node)).to_string()
+        self
+            .find_end_node_value(Node("AAA".to_string()), |n| n.eq(&&Node("ZZZ".to_string())))
+            .to_string()
     }
 
     fn task2(&self) -> String {
-        let is_end_node = |n: &Node| n.ends_with('Z');
         self.map.keys()
             .filter(|&n| n.ends_with('A'))
-            .map(|n| self.find_end_node_value(n.clone(), is_end_node))
+            .map(|n| self.find_end_node_value(n.clone(), |n| n.ends_with('Z')))
             .fold(1, lcm)
             .to_string()
     }
