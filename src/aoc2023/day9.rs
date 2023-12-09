@@ -1,3 +1,4 @@
+use std::ops::Add;
 use advent_of_code::Day;
 
 #[derive(Default, Debug)]
@@ -11,24 +12,21 @@ impl Day9Of2023 {
             data: vec![],
         }
     }
+
+    fn get_sum_of_history(&self, get_element: fn(&Vec<i32>) -> &i32, operation: fn(&i32, &i32) -> i32) -> i32 {
+        self.data.iter()
+            .map(|l| get_history_of_the_line(l, get_element, operation))
+            .sum::<i32>()
+    }
 }
 
-fn get_history_of_the_line_last(line: &Vec<i32>) -> i32 {
+fn get_history_of_the_line(line: &Vec<i32>, get_element: fn(&Vec<i32>) -> &i32, operation: fn(&i32, &i32) -> i32) -> i32 {
     if line.iter().all(|x| x == &0) { return 0; }
-    let last =  line.last().unwrap();
+    let first =  get_element(line);
 
     let next_line = (0..(line.len()-1)).map(|i| line[i+1]-line[i]).collect::<Vec<i32>>();
 
-    last + get_history_of_the_line_last(&next_line)
-}
-
-fn get_history_of_the_line_first(line: &Vec<i32>) -> i32 {
-    if line.iter().all(|x| x == &0) { return 0; }
-    let first =  line.first().unwrap();
-
-    let next_line = (0..(line.len()-1)).map(|i| line[i+1]-line[i]).collect::<Vec<i32>>();
-
-    first - crate::aoc2023::day9::get_history_of_the_line_first(&next_line)
+    operation(&first, &get_history_of_the_line(&next_line, get_element, operation))
 }
 
 impl Day for Day9Of2023 {
@@ -47,15 +45,11 @@ impl Day for Day9Of2023 {
     }
 
     fn task1(&self) -> String {
-        self.data.iter()
-            .map(|l| get_history_of_the_line_last(l))
-            .sum::<i32>().to_string()
+        self.get_sum_of_history(|l: &Vec<i32>| l.last().unwrap(), |a,b| a+b).to_string()
     }
 
     fn task2(&self) -> String {
-        self.data.iter()
-            .map(|l| get_history_of_the_line_first(l))
-            .sum::<i32>().to_string()
+        self.get_sum_of_history(|l: &Vec<i32>| l.first().unwrap(), |a,b| a-b).to_string()
     }
 }
 
