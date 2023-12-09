@@ -39,5 +39,5 @@ async fn main() {
     let data = get_day_input(day.get_day()).await;
     println!("----- Parsing data for a Day {} Year {}-----", day.get_day().1, day.get_day().0);
     day.parse(data);
-    day.run();
+    day.run(None);
 }

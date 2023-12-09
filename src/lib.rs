@@ -1,3 +1,17 @@
+macro_rules! run_task {
+            ($self:ident, $F:ident, $n:literal) => {
+                println!("----- Task {} -----", $n);
+                let time = std::time::Instant::now();
+                let task = $self.$F();
+                println!("Task {}: {}, time: {:?}", $n, task, time.elapsed());
+            };
+        }
+
+pub enum Part {
+    FIRST,
+    SECOND,
+}
+
 pub trait Day {
     fn new() -> Self where Self: Default {
         Self::default()
@@ -7,13 +21,15 @@ pub trait Day {
     fn parse(&mut self, data: String);
     fn task1(&self) -> String;
     fn task2(&self) -> String;
-    fn run(&self) -> () {
-        println!("----- Task 1 -----");
-        let task1 = self.task1();
-        println!("Task 1: {}", task1);
-        println!("----- Task 2 -----");
-        let task2 = self.task2();
-        println!("Task 2: {}", task2);
+    fn run(&self, part: Option<Part>) -> () {
+        match part {
+            Some(Part::FIRST) => { run_task!(self, task1, 1); },
+            Some(Part::SECOND) => { run_task!(self, task2, 2); },
+            None => {
+                run_task!(self, task1, 1);
+                run_task!(self, task2, 2);
+            }
+        };
     }
 }
 
