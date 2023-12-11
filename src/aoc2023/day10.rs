@@ -147,9 +147,9 @@ impl Day10Of2023 {
 
     fn set_start_type(&mut self) {
         let (x, y) = self.get_start_position();
-        let top = if y == 0 { false } else { self.get_pipe(x, y - 1).has_connection(&Direction::S)};
-        let bottom = if y == self.data.len() - 1 { false } else { self.get_pipe(x, y + 1).has_connection(&Direction::N)};
-        let left = if x == 0 { false } else {  self.get_pipe(x - 1, y).has_connection(&Direction::E) };
+        let top = if y == 0 { false } else { self.get_pipe(x, y - 1).has_connection(&Direction::S) };
+        let bottom = if y == self.data.len() - 1 { false } else { self.get_pipe(x, y + 1).has_connection(&Direction::N) };
+        let left = if x == 0 { false } else { self.get_pipe(x - 1, y).has_connection(&Direction::E) };
         let right = if x == self.data[y].len() - 1 { false } else { self.get_pipe(x + 1, y).has_connection(&Direction::W) };
         let pipe_type = match (top, bottom, left, right) {
             (true, true, false, false) => PipeType::Straight(Direction::N, Direction::S),
@@ -163,6 +163,36 @@ impl Day10Of2023 {
         let pipe = self.get_pipe_mut(x, y);
         pipe.pipe_type = pipe_type;
     }
+
+    fn get_pipe_polygon(&self) -> Vec<(i32, i32)> {
+        let (mut x, mut y) = self.get_start_position();
+        let mut current_pipe = self.get_pipe(x, y);
+        let mut current_direction = current_pipe.get_directions().0;
+        let mut vertices: Vec<(i32, i32)> = Vec::new();
+
+        loop {
+            vertices.push((x as i32, y as i32));
+            current_direction = current_pipe.get_connection(current_direction);
+            (x, y) = current_direction.move_in_direction(x, y);
+            current_direction = current_direction.get_opposite();
+            current_pipe = self.get_pipe(x, y);
+            if current_pipe.is_start { break; }
+        }
+        return vertices;
+    }
+}
+
+fn is_point_in_polygon(point: (i32, i32), vertices: Vec<(i32, i32)>) -> bool {
+    let mut is_inside = false;
+    let mut j = vertices.len() - 1;
+    for i in 0..vertices.len() {
+        if (vertices[i].1 > point.1) != (vertices[j].1 > point.1) &&
+            point.0 < (vertices[j].0 - vertices[i].0) * (point.1 - vertices[i].1) / (vertices[j].1 - vertices[i].1) + vertices[i].0 {
+            is_inside = !is_inside;
+        }
+        j = i;
+    }
+    is_inside
 }
 
 impl Day for Day10Of2023 {
@@ -178,26 +208,22 @@ impl Day for Day10Of2023 {
     }
 
     fn task1(&self) -> String {
-
-        let (mut x, mut y) = self.get_start_position();
-        let mut current_pipe = self.get_pipe(x, y);
-        let mut current_direction = current_pipe.get_directions().0;
-        let mut steps = 0;
-
-        loop {
-            steps += 1;
-            current_direction = current_pipe.get_connection(current_direction);
-            (x, y) = current_direction.move_in_direction(x, y);
-            current_direction = current_direction.get_opposite();
-            current_pipe = self.get_pipe(x,y);
-            if current_pipe.is_start { break; }
-        }
-
-        (steps / 2).to_string()
+        (self.get_pipe_polygon().len() / 2).to_string()
     }
 
     fn task2(&self) -> String {
-        todo!()
+        let vertices: Vec<(i32, i32)> = self.get_pipe_polygon();
+        let mut inside = 0;
+        for (y, row) in self.data.iter().enumerate() {
+            for (x, pipe) in row.iter().enumerate() {
+                if vertices.contains(&(x as i32, y as i32)) { continue; }
+                if is_point_in_polygon((x as i32, y as i32), vertices.clone()) {
+                    inside += 1;
+                }
+            }
+        }
+
+        inside.to_string()
     }
 }
 
@@ -209,6 +235,7 @@ mod tests {
     const INPUT_2: &str = "-L|F7\n7S-7|\nL|7||\n-L-J|\nL|-JF";
     const INPUT_3: &str = "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...";
     const INPUT_4: &str = "7-F7-\n.FJ|7\nSJLL7\n|F--J\nLJ.LJ";
+    const INPUT_5: &str = "...........\n.S-------7.\n.|F-----7|.\n.||.....||.\n.||.....||.\n.|L-7.F-J|.\n.|..|.|..|.\n.L--J.L--J.\n...........";
 
     #[test]
     fn task_1_1() {
@@ -239,9 +266,32 @@ mod tests {
     }
 
     #[test]
-    fn task_2() {
+    fn task_2_1() {
         let mut day = Day10Of2023::new();
         day.parse(INPUT_1.to_string());
-        assert_eq!(day.task2(), "");
+        assert_eq!(day.task2(), "1");
+    }
+
+    #[test]
+    fn task_2_5() {
+        let mut day = Day10Of2023::new();
+        day.parse(INPUT_5.to_string());
+        assert_eq!(day.task2(), "4");
+    }
+
+    #[test]
+    fn task_2_6() {
+        let input = ".F----7F7F7F7F-7....\n.|F--7||||||||FJ....\n.||.FJ||||||||L7....\nFJL7L7LJLJ||LJ.L-7..\nL--J.L7...LJS7F-7L7.\n....F-J..F7FJ|L7L7L7\n....L7.F7||L7|.L7L7|\n.....|FJLJ|FJ|F7|.LJ\n....FJL-7.||.||||...\n....L---J.LJ.LJLJ...";
+        let mut day = Day10Of2023::new();
+        day.parse(input.to_string());
+        assert_eq!(day.task2(), "8");
+    }
+
+    #[test]
+    fn task_2_7() {
+        let input = "FF7FSF7F7F7F7F7F---7\nL|LJ||||||||||||F--J\nFL-7LJLJ||||||LJL-77\nF--JF--7||LJLJ7F7FJ-\nL---JF-JLJ.||-FJLJJ7\n|F|F-JF---7F7-L7L|7|\n|FFJF7L7F-JF7|JL---7\n7-L-JL7||F7|L7F-7F7|\nL.L7LFJ|||||FJL7||LJ\nL7JLJL-JLJLJL--JLJ.L";
+        let mut day = Day10Of2023::new();
+        day.parse(input.to_string());
+        assert_eq!(day.task2(), "10");
     }
 }
