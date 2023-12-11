@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use advent_of_code::Day;
+use crate::aoc2023::day10::Day10Of2023;
 use crate::aoc2023::day1::Day1Of2023;
 use crate::aoc2023::day2::Day2Of2023;
 use crate::aoc2023::day3::Day3Of2023;
@@ -20,6 +21,7 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
+mod day10;
 
 
 pub fn get_year_days() -> HashMap<usize, Box<dyn Day>> {
@@ -33,6 +35,7 @@ pub fn get_year_days() -> HashMap<usize, Box<dyn Day>> {
     days.insert(7, Box::new(Day7Of2023::new()));
     days.insert(8, Box::new(Day8Of2023::new()));
     days.insert(9, Box::new(Day9Of2023::new()));
+    days.insert(10, Box::new(Day10Of2023::new()));
 
     days
 }
