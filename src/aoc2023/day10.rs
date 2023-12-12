@@ -132,11 +132,6 @@ impl Day10Of2023 {
         (x, y)
     }
 
-    fn get_start_pipe(&self) -> &Pipe {
-        let (x, y) = self.get_start_position();
-        &self.get_pipe(x, y)
-    }
-
     fn get_pipe(&self, x: usize, y: usize) -> &Pipe {
         &self.data[y][x]
     }
@@ -215,7 +210,7 @@ impl Day for Day10Of2023 {
         let vertices: Vec<(i32, i32)> = self.get_pipe_polygon();
         let mut inside = 0;
         for (y, row) in self.data.iter().enumerate() {
-            for (x, pipe) in row.iter().enumerate() {
+            for (x,_) in row.iter().enumerate() {
                 if vertices.contains(&(x as i32, y as i32)) { continue; }
                 if is_point_in_polygon((x as i32, y as i32), vertices.clone()) {
                     inside += 1;

@@ -1,4 +1,3 @@
-use std::ops::Add;
 use advent_of_code::Day;
 
 #[derive(Default, Debug)]
