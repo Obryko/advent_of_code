@@ -1,7 +1,7 @@
 mod day;
 mod inputs;
-mod years;
 mod year_macro;
+mod years;
 
-pub use years::*;
 pub use day::*;
+pub use years::*;

@@ -1,6 +1,5 @@
+use crate::{RegisteredDay, aoc2015, aoc2022, aoc2023};
 use std::collections::BTreeMap;
-use crate::{aoc2015, aoc2022, aoc2023, RegisteredDay};
-
 
 type YearLoader = fn() -> BTreeMap<usize, RegisteredDay>;
 

@@ -1,6 +1,6 @@
+use advent_of_code::YEARS;
 use clap::Parser;
 use dotenvy::dotenv;
-use advent_of_code::YEARS;
 #[derive(Parser)]
 #[command(version, about)]
 struct Cli {
@@ -15,31 +15,32 @@ struct Cli {
     part: Option<u8>,
 }
 
-fn main()-> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
     let cli = Cli::parse();
 
     let year_number: usize = cli.year.unwrap_or(YEARS.last().unwrap().0);
 
-    let days = YEARS.iter()
+    let days = YEARS
+        .iter()
         .find(|y| y.0 == year_number)
         .ok_or_else(|| format!("Year {year_number} not found."))?
         .1();
 
-
     let day_number = match cli.day {
         Some(d) => d as usize,
-        None => *days.keys().next_back()
+        None => *days
+            .keys()
+            .next_back()
             .ok_or_else(|| format!("Year {year_number} has no implemented days."))?,
     };
     let task_number = match cli.part {
         Some(1) => Some(advent_of_code::Part::One),
         Some(2) => Some(advent_of_code::Part::Two),
-        _ => None
+        _ => None,
     };
 
-    days
-        .get(&day_number)
+    days.get(&day_number)
         .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?
         .run(task_number)?;
 

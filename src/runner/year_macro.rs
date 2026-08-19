@@ -1,4 +1,3 @@
-
 #[macro_export]
 macro_rules! year {
     ($year:literal, $($n:literal => $module:ident::$ty:ident),* $(,)?) => {

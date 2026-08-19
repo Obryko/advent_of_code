@@ -1,4 +1,3 @@
-
 crate::year! {
     2023,
     1 => day1::Day1Of2023,
