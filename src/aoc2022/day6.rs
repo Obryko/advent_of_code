@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Default)]
 pub struct Day6Of2022 {
@@ -21,10 +21,6 @@ impl Day6Of2022 {
 }
 
 impl Day for Day6Of2022 {
-    fn get_day(&self) -> (i32, i32) {
-        (2022, 6)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data.split('\n').collect::<Vec<&str>>()[0].chars().collect();
     }
@@ -50,70 +46,70 @@ mod tests {
 
     #[test]
     fn task_1_1() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task1(), "7");
     }
 
     #[test]
     fn task_1_2() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_2.to_string());
         assert_eq!(day.task1(), "5");
     }
 
     #[test]
     fn task_1_3() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_3.to_string());
         assert_eq!(day.task1(), "6");
     }
 
     #[test]
     fn task_1_4() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_4.to_string());
         assert_eq!(day.task1(), "10");
     }
 
     #[test]
     fn task_1_5() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_5.to_string());
         assert_eq!(day.task1(), "11");
     }
 
     #[test]
     fn task_2_1() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task2(), "19");
     }
 
     #[test]
     fn task_2_2() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_2.to_string());
         assert_eq!(day.task2(), "23");
     }
 
     #[test]
     fn task_2_3() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_3.to_string());
         assert_eq!(day.task2(), "23");
     }
 
     #[test]
     fn task_2_4() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_4.to_string());
         assert_eq!(day.task2(), "29");
     }
 
     #[test]
     fn task_2_5() {
-        let mut day = Day6Of2022::new();
+        let mut day = Day6Of2022::default();
         day.parse(INPUT_5.to_string());
         assert_eq!(day.task2(), "26");
     }

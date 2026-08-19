@@ -1,49 +1,49 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use advent_of_code::Day;
+use crate::Day;
 
 
 #[derive(Debug, PartialEq, Eq, Hash, Ord, PartialOrd, Copy, Clone)]
 enum Card {
-    JOKER = 1,
-    TWO = 2,
-    THREE = 3,
-    FOUR = 4,
-    FIVE = 5,
-    SIX = 6,
-    SEVEN = 7,
-    EIGHT = 8,
-    NINE = 9,
-    TEN = 10,
-    JACK = 11,
-    QUEEN = 12,
-    KING = 13,
-    ACE = 14,
+    Joker = 1,
+    Two = 2,
+    Three = 3,
+    Four = 4,
+    Five = 5,
+    Six = 6,
+    Seven = 7,
+    Eight = 8,
+    Nine = 9,
+    Ten = 10,
+    Jack = 11,
+    Queen = 12,
+    King = 13,
+    Ace = 14,
 }
 
 impl Card {
     fn from_str(s: char) -> Card {
         match s {
-            '2' => Card::TWO,
-            '3' => Card::THREE,
-            '4' => Card::FOUR,
-            '5' => Card::FIVE,
-            '6' => Card::SIX,
-            '7' => Card::SEVEN,
-            '8' => Card::EIGHT,
-            '9' => Card::NINE,
-            'T' => Card::TEN,
-            'J' => Card::JACK,
-            'Q' => Card::QUEEN,
-            'K' => Card::KING,
-            'A' => Card::ACE,
+            '2' => Card::Two,
+            '3' => Card::Three,
+            '4' => Card::Four,
+            '5' => Card::Five,
+            '6' => Card::Six,
+            '7' => Card::Seven,
+            '8' => Card::Eight,
+            '9' => Card::Nine,
+            'T' => Card::Ten,
+            'J' => Card::Jack,
+            'Q' => Card::Queen,
+            'K' => Card::King,
+            'A' => Card::Ace,
             _ => panic!("Invalid card")
         }
     }
 
     fn jack_to_joker(&self) -> &Card {
         match self {
-            Card::JACK => &Card::JOKER,
+            Card::Jack => &Card::Joker,
             _ => self
         }
     }
@@ -93,10 +93,10 @@ impl Hand {
         }
     }
     fn get_type_with_joker(mut types: HashMap<Card, usize>) -> HandType {
-        let jokers = types.remove(&Card::JOKER).unwrap_or(0);
+        let jokers = types.remove(&Card::Joker).unwrap_or(0);
 
         if types.is_empty() {
-            types.insert(Card::JOKER, jokers);
+            types.insert(Card::Joker, jokers);
         } else {
             let card = types.iter().max_by_key(|&(_, i)| i).map(|(&card, _)| card).unwrap();
             types.entry(card).and_modify(|i| *i += jokers);
@@ -109,7 +109,7 @@ impl Hand {
         let mut types: HashMap<Card, usize> = HashMap::new();
         self.cards.iter().for_each(|&card| *types.entry(card).or_insert(0) += 1);
 
-        match types.contains_key(&Card::JOKER) {
+        match types.contains_key(&Card::Joker) {
             true => Hand::get_type_with_joker(types),
             false => Hand::get_type_without_joker(types)
         }
@@ -122,7 +122,7 @@ impl Hand {
                 o => return o,
             }
         }
-        return Ordering::Equal;
+        Ordering::Equal
     }
 
     fn compare_types(&self, other: &Hand) -> Ordering {
@@ -140,24 +140,12 @@ impl Hand {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Day7Of2023 {
     data: Vec<Hand>,
 }
 
-impl Day7Of2023 {
-    pub fn new() -> Self {
-        Self {
-            data: Vec::new(),
-        }
-    }
-}
-
 impl Day for Day7Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 7)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data.lines()
             .map(|line|
@@ -194,14 +182,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day7Of2023::new();
+        let mut day = Day7Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "6440");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day7Of2023::new();
+        let mut day = Day7Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "5905");
     }

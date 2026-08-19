@@ -1,4 +1,4 @@
-use advent_of_code::Day;
+use crate::Day;
 
 struct Command(usize, usize, usize);
 
@@ -48,7 +48,7 @@ impl Day5Of2022 {
             })
             .fold(Vec::new(), |mut acc, value| {
                 for (index, c) in value.iter().enumerate() {
-                    if None == acc.get(index) {
+                    if acc.get(index).is_none() {
                         acc.insert(index, Vec::new())
                     }
                     if c.is_alphabetic() {
@@ -61,10 +61,6 @@ impl Day5Of2022 {
 }
 
 impl Day for Day5Of2022 {
-    fn get_day(&self) -> (i32, i32) {
-        (2022, 5)
-    }
-
     fn parse(&mut self, data: String) {
         let inputs = data.split("\n\n").collect::<Vec<&str>>();
 
@@ -113,14 +109,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day5Of2022::new();
+        let mut day = Day5Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "CMZ");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day5Of2022::new();
+        let mut day = Day5Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "MCD");
     }

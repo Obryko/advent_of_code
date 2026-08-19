@@ -1,4 +1,4 @@
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug, Copy, Clone)]
 struct SectionRange(i32, i32);
@@ -48,10 +48,6 @@ pub struct Day4Of2022 {
 }
 
 impl Day for Day4Of2022 {
-    fn get_day(&self) -> (i32, i32) {
-        (2022, 4)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data
             .split('\n')
@@ -85,14 +81,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day4Of2022::new();
+        let mut day = Day4Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "2");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day4Of2022::new();
+        let mut day = Day4Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "4");
     }

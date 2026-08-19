@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 struct SignWithPosition(char, usize, usize);
@@ -12,7 +12,7 @@ pub struct Day3Of2023 {
     data: Vec<NumberSign>,
 }
 
-fn check_neighbors_in_grid(grid: &Vec<Vec<char>>, row_index: i32, col_index: i32) -> HashSet<SignWithPosition> {
+fn check_neighbors_in_grid(grid: &[Vec<char>], row_index: i32, col_index: i32) -> HashSet<SignWithPosition> {
     let mut neighbors: HashSet<SignWithPosition> = HashSet::new();
     for row in (row_index - 1)..=(row_index + 1) {
         for col in (col_index - 1)..=(col_index + 1) {
@@ -22,7 +22,7 @@ fn check_neighbors_in_grid(grid: &Vec<Vec<char>>, row_index: i32, col_index: i32
                 (r, c) if r as usize > grid.len() - 1 || c as usize > grid[0].len() - 1 => continue,
                 (r, c) => {
                     let value = grid[r as usize][c as usize];
-                    if !(value.is_digit(10) || value.eq(&'.')) {
+                    if !(value.is_ascii_digit() || value.eq(&'.')) {
                         neighbors.insert(SignWithPosition(value, r as usize, c as usize));
                     }
                 }
@@ -33,18 +33,14 @@ fn check_neighbors_in_grid(grid: &Vec<Vec<char>>, row_index: i32, col_index: i32
 }
 
 impl Day for Day3Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 3)
-    }
-
     fn parse(&mut self, data: String) {
-        let grid = data.lines().into_iter().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+        let grid = data.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
         let mut res: Vec<NumberSign> = Vec::new();
         for (row_index, row) in grid.iter().enumerate() {
             let mut num = String::new();
             let mut signs = HashSet::new();
             for (col_index, col) in row.iter().enumerate() {
-                if !col.is_digit(10) {
+                if !col.is_ascii_digit() {
                     if !num.is_empty() {
                         res.push(NumberSign(num.parse::<i32>().unwrap(), signs));
                         num = String::new();
@@ -87,7 +83,7 @@ impl Day for Day3Of2023 {
                 if gears.is_empty() || gears.len() == 1 {
                     return 0;
                 }
-                gears.iter().fold(1, |acc, gear| acc * gear)
+                gears.iter().product::<i32>()
             }).sum::<i32>()
             .to_string()
     }
@@ -101,14 +97,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day3Of2023::new();
+        let mut day = Day3Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "4361");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day3Of2023::new();
+        let mut day = Day3Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "467835");
     }

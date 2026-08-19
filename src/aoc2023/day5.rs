@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::ops::Range;
 
-use advent_of_code::Day;
+use crate::Day;
 use pariter::{IteratorExt, scope};
 
 #[derive(Debug, Copy, Clone)]
@@ -61,7 +61,7 @@ impl Garden {
         }
     }
 
-    fn category_map_list_from_string(string: &String) -> Vec<CategoryMap> {
+    fn category_map_list_from_string(string: &str) -> Vec<CategoryMap> {
         string.split("\n").map(|v| CategoryMap::from_string(v.to_string())).collect()
     }
 
@@ -76,7 +76,7 @@ impl Garden {
     }
 }
 
-fn get_destination_for_source(mapper: &Vec<CategoryMap>, source: i64) -> i64 {
+fn get_destination_for_source(mapper: &[CategoryMap], source: i64) -> i64 {
     mapper.iter().find_map(|v| v.get_destination_for_source(source)).unwrap_or(source)
 }
 
@@ -87,10 +87,6 @@ pub struct Day5Of2023 {
 }
 
 impl Day for Day5Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 5)
-    }
-
     fn parse(&mut self, data: String) {
         let (seeds, categories) = data.split_once("\n").unwrap();
         self.seeds = (seeds[7..]).split(" ").map(|v| v.parse().unwrap()).collect();
@@ -126,7 +122,7 @@ impl Day for Day5Of2023 {
                         }
                     });
                     println!("{:?}", min);
-                    return min;
+                    min
                 })
                 .min().unwrap().to_string()
         }).unwrap()
@@ -173,14 +169,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day5Of2023::new();
+        let mut day = Day5Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "35");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day5Of2023::new();
+        let mut day = Day5Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "46");
     }

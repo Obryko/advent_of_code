@@ -1,4 +1,4 @@
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Default)]
 pub struct Day1Of2023 {
@@ -18,14 +18,11 @@ const DIGITS: [(&str, i32); 10] = [
     ("NINE", 9),
 ];
 
-fn map_line_string_digits_into_digits(line: &String) -> Vec<i32> {
-    (0..line.len()).into_iter().map(|i| -> Option<i32> {
+fn map_line_string_digits_into_digits(line: &str) -> Vec<i32> {
+    (0..line.len()).into_iter().filter_map(|i| -> Option<i32> {
         let item = line.chars().nth(i).unwrap();
         if item.is_numeric() {
-            return match item.to_string().parse::<i32>() {
-                Ok(value) => Some(value),
-                _ => None
-            };
+            return item.to_string().parse::<i32>().ok();
         };
         let sub_string = &line[i..];
         for (digit, value) in DIGITS {
@@ -35,10 +32,10 @@ fn map_line_string_digits_into_digits(line: &String) -> Vec<i32> {
         }
 
         None
-    }).filter(|x| x.is_some()).map(|x| x.unwrap()).collect()
+    }).collect()
 }
 
-fn get_digits_from_line(line: &String) -> Vec<i32> {
+fn get_digits_from_line(line: &str) -> Vec<i32> {
     line.chars().filter(|char| char.is_numeric()).map(|char| char.to_string().parse::<i32>().unwrap()).collect()
 }
 
@@ -50,19 +47,15 @@ fn find_number_in_line(line: Vec<i32>) -> i32 {
 }
 
 impl Day for Day1Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 1)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| line.to_string()).collect();
     }
 
     fn task1(&self) -> String {
-        self.data.iter().map(get_digits_from_line).map(find_number_in_line).sum::<i32>().to_string()
+        self.data.iter().map(|s| get_digits_from_line(s.as_str())).map(find_number_in_line).sum::<i32>().to_string()
     }
     fn task2(&self) -> String {
-        self.data.iter().map(map_line_string_digits_into_digits).map(find_number_in_line).sum::<i32>().to_string()
+        self.data.iter().map(|s| map_line_string_digits_into_digits(s.as_str())).map(find_number_in_line).sum::<i32>().to_string()
     }
 }
 
@@ -75,7 +68,7 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day1Of2023::new();
+        let mut day = Day1Of2023::default();
         day.parse(INPUT_1.to_string());
 
         assert_eq!(day.task1(), "142");
@@ -83,7 +76,7 @@ mod tests {
 
     #[test]
     fn task_2() {
-        let mut day = Day1Of2023::new();
+        let mut day = Day1Of2023::default();
         day.parse(INPUT_2.to_string());
 
         assert_eq!(day.task2(), "281");

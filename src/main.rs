@@ -1,43 +1,47 @@
-extern crate core;
+use clap::Parser;
+use dotenvy::dotenv;
+use advent_of_code::YEARS;
+#[derive(Parser)]
+#[command(version, about)]
+struct Cli {
+    /// Year to run [default: latest implemented year]
+    #[arg(short, long)]
+    year: Option<usize>,
+    /// Day to run [default: latest implemented day for the year]
+    #[arg(short, long,value_parser = clap::value_parser!(u8).range(1..=25))]
+    day: Option<u8>,
+    /// Part to run (1 or 2) [default: run both]
+    #[arg(short, long,value_parser = clap::value_parser!(u8).range(1..=2))]
+    part: Option<u8>,
+}
 
-use std::collections::HashMap;
-use std::env;
-
-use dotenv::dotenv;
-use advent_of_code::Day;
-use advent_of_code::inputs::get_day_input;
-
-mod aoc2015;
-mod aoc2022;
-mod aoc2023;
-
-
-#[tokio::main]
-async fn main() {
+fn main()-> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
-    let args: Vec<String> = env::args().collect();
-    let year_value = match args.get(1).unwrap_or(&"0".to_string()).parse::<usize>() {
-        Ok(y) if y >= 2015 && y<= 2023 => Some(y),
-        _ => None
+    let cli = Cli::parse();
+
+    let year_number: usize = cli.year.unwrap_or(YEARS.last().unwrap().0);
+
+    let days = YEARS.iter()
+        .find(|y| y.0 == year_number)
+        .ok_or_else(|| format!("Year {year_number} not found."))?
+        .1();
+
+
+    let day_number = match cli.day {
+        Some(d) => d as usize,
+        None => *days.keys().next_back()
+            .ok_or_else(|| format!("Year {year_number} has no implemented days."))?,
     };
-    let day_value = match args.get(2).unwrap_or(&"0".to_string()).parse::<usize>() {
-        Ok(d) if d >= 1 && d <= 25 => Some(d),
+    let task_number = match cli.part {
+        Some(1) => Some(advent_of_code::Part::One),
+        Some(2) => Some(advent_of_code::Part::Two),
         _ => None
     };
 
-    let mut days: HashMap<usize, Box<dyn Day>> = match year_value {
-        Some(2015) => aoc2015::get_year_days(),
-        Some(2022) => aoc2022::get_year_days(),
-        Some(2023) => aoc2023::get_year_days(),
-        _ => aoc2023::get_year_days(),
-    };
+    days
+        .get(&day_number)
+        .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?
+        .run(task_number)?;
 
-    let day = match day_value {
-        Some(number) => days.get_mut(&number).unwrap(),
-        None => days.get_mut(&days.len()).unwrap()
-    };
-    let data = get_day_input(day.get_day()).await;
-    println!("----- Parsing data for a Day {} Year {}-----", day.get_day().1, day.get_day().0);
-    day.parse(data);
-    day.run(None);
+    Ok(())
 }

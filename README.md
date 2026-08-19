@@ -6,8 +6,10 @@
 | `cargo test aoc[year]`           | run tests from the whole year                  | `cargo test aoc2023`       |
 | `cargo test aoc[year]::day[day]` | run tests from the day                         | `cargo test aoc2023::day1` |
 | `cargo run`                      | run with input for a last day of the last year |                            |
-| `cargo run -- [year]`            | run with input for a last day of the year      | `cargo run -- 2023`        |
-| `cargo run -- [year] [day]`      | run with input for the day                     | `cargo run -- 2023 1`      |
+| `cargo run -- -y/--year [year]`  | run with input for a last day of the year      | `cargo run -- -y 2023`     |
+| `cargo run -- -d/--day [day]`    | run with input for the day (of the latest year, or combine with `-y`) | `cargo run -- -y 2023 -d 1` |
+| `cargo run -- -p/--part [part]`  | run only part 1 or part 2 for the day          | `cargo run -- -y 2023 -d 1 -p 2` |
+| `cargo run -- --help`            | show usage and argument descriptions           |                            |
 
 ## Solutions
 

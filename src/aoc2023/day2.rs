@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet};
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Hash, Eq, PartialEq, Debug)]
 enum Color {
-    RED(i32),
-    GREEN(i32),
-    BLUE(i32),
+    Red(i32),
+    Green(i32),
+    Blue(i32),
 }
 
 const MAX_RED: i32 = 12;
@@ -15,34 +15,34 @@ const MAX_BLUE: i32 = 14;
 impl Color {
     fn new(color: &str, count: i32) -> Self {
         match color {
-            "red" => Color::RED(count),
-            "green" => Color::GREEN(count),
-            "blue" => Color::BLUE(count),
+            "red" => Color::Red(count),
+            "green" => Color::Green(count),
+            "blue" => Color::Blue(count),
             _ => panic!("Unknown color: {}", color),
         }
     }
 
     fn get_value(&self) -> i32 {
         match self {
-            Color::RED(count) => *count,
-            Color::GREEN(count) => *count,
-            Color::BLUE(count) => *count,
+            Color::Red(count) => *count,
+            Color::Green(count) => *count,
+            Color::Blue(count) => *count,
         }
     }
 
     fn is_possible(&self) -> bool {
         match self {
-            Color::GREEN(count) => *count <= MAX_GREEN,
-            Color::RED(count) => *count <= MAX_RED,
-            Color::BLUE(count) => *count <= MAX_BLUE,
+            Color::Green(count) => *count <= MAX_GREEN,
+            Color::Red(count) => *count <= MAX_RED,
+            Color::Blue(count) => *count <= MAX_BLUE,
         }
     }
 
     fn eq_to_string(&self, color: &str) -> bool {
         match self {
-            Color::RED(_) => color == "red",
-            Color::GREEN(_) => color == "green",
-            Color::BLUE(_) => color == "blue",
+            Color::Red(_) => color == "red",
+            Color::Green(_) => color == "green",
+            Color::Blue(_) => color == "blue",
         }
     }
 }
@@ -53,7 +53,7 @@ pub struct Day2Of2023 {
 }
 
 impl Day2Of2023 {
-    fn get_max_in_round(rounds: &Vec<HashSet<Color>>, color: &str) -> i32 {
+    fn get_max_in_round(rounds: &[HashSet<Color>], color: &str) -> i32 {
         rounds.iter()
             .map(|round| {
                 let res = round.iter().find(|&cube| cube.eq_to_string(color));
@@ -66,16 +66,12 @@ impl Day2Of2023 {
 }
 
 impl Day for Day2Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 2)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| {
             let game = line.split(":").collect::<Vec<&str>>();
             let game_number: i32 = game[0].rsplit_once(" ").unwrap().1.parse().unwrap();
-            let rounds = game[1].split(";").into_iter().map(|round| {
-                round.split(",").into_iter().map(|cube| {
+            let rounds = game[1].split(";").map(|round| {
+                round.split(",").map(|cube| {
                     let res = cube.trim().split(" ").collect::<Vec<&str>>();
                     let count = res[0].parse::<i32>().unwrap();
                     Color::new(res[1], count)
@@ -96,7 +92,7 @@ impl Day for Day2Of2023 {
     }
 
     fn task2(&self) -> String {
-        self.data.iter().map(|(_, rounds)| {
+        self.data.values().map(|rounds| {
             let red = Self::get_max_in_round(rounds, "red");
             let green = Self::get_max_in_round(rounds, "green");
             let blue = Self::get_max_in_round(rounds, "blue");
@@ -113,14 +109,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day2Of2023::new();
+        let mut day = Day2Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "8");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day2Of2023::new();
+        let mut day = Day2Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "2286");
     }

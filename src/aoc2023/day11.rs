@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Display, Formatter};
 
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Space {
@@ -46,9 +46,6 @@ impl Display for Day11Of2023 {
 
 
 impl Day11Of2023 {
-    pub fn new() -> Self {
-        Self::default()
-    }
 
     fn expand_rows(&mut self) {
         let indexes = self.data
@@ -92,10 +89,6 @@ impl Day11Of2023 {
 
 
 impl Day for Day11Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 11)
-    }
-
     fn parse(&mut self, data: String) {
         let mut galaxy_index = 1;
         self.data = data.lines()
@@ -105,7 +98,7 @@ impl Day for Day11Of2023 {
                     if space == Space::Galaxy(galaxy_index) {
                         galaxy_index += 1;
                     }
-                    return space;
+                    space
                 }).collect::<Vec<Space>>())
             .collect::<Vec<Vec<Space>>>();
         self.expand();
@@ -148,14 +141,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day11Of2023::new();
+        let mut day = Day11Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "374");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day11Of2023::new();
+        let mut day = Day11Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "");
     }

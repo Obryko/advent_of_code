@@ -1,4 +1,4 @@
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Default)]
 pub struct Day1Of2022 {
@@ -7,9 +7,6 @@ pub struct Day1Of2022 {
 
 
 impl Day for Day1Of2022 {
-    fn get_day(&self) -> (i32, i32) {
-        (2022, 1)
-    }
 
     fn parse(&mut self, data: String) {
         self.data = data
@@ -41,14 +38,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day1Of2022::new();
+        let mut day = Day1Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "24000");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day1Of2022::new();
+        let mut day = Day1Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "45000");
     }

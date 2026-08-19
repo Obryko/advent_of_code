@@ -1,5 +1,5 @@
 use std::fmt::{Debug, Formatter};
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 enum Direction {
@@ -120,12 +120,6 @@ impl Debug for Day10Of2023 {
 }
 
 impl Day10Of2023 {
-    fn new() -> Self {
-        Self {
-            data: vec![],
-        }
-    }
-
     fn get_start_position(&self) -> (usize, usize) {
         let y = self.data.iter().position(|row| row.iter().any(|pipe| pipe.is_start)).unwrap();
         let x = self.data[y].iter().position(|pipe| pipe.is_start).unwrap();
@@ -173,7 +167,7 @@ impl Day10Of2023 {
             current_pipe = self.get_pipe(x, y);
             if current_pipe.is_start { break; }
         }
-        return vertices;
+        vertices
     }
 }
 
@@ -191,10 +185,6 @@ fn is_point_in_polygon(point: (i32, i32), vertices: Vec<(i32, i32)>) -> bool {
 }
 
 impl Day for Day10Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 10)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| {
             line.chars().map(|c| Pipe::from_char(&c)).collect::<Vec<Pipe>>()
@@ -234,42 +224,42 @@ mod tests {
 
     #[test]
     fn task_1_1() {
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task1(), "4");
     }
 
     #[test]
     fn task_1_2() {
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(INPUT_2.to_string());
         assert_eq!(day.task1(), "4");
     }
 
     #[test]
     fn task_1_3() {
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(INPUT_3.to_string());
         assert_eq!(day.task1(), "8");
     }
 
     #[test]
     fn task_1_4() {
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(INPUT_4.to_string());
         assert_eq!(day.task1(), "8");
     }
 
     #[test]
     fn task_2_1() {
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task2(), "1");
     }
 
     #[test]
     fn task_2_5() {
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(INPUT_5.to_string());
         assert_eq!(day.task2(), "4");
     }
@@ -277,7 +267,7 @@ mod tests {
     #[test]
     fn task_2_6() {
         let input = ".F----7F7F7F7F-7....\n.|F--7||||||||FJ....\n.||.FJ||||||||L7....\nFJL7L7LJLJ||LJ.L-7..\nL--J.L7...LJS7F-7L7.\n....F-J..F7FJ|L7L7L7\n....L7.F7||L7|.L7L7|\n.....|FJLJ|FJ|F7|.LJ\n....FJL-7.||.||||...\n....L---J.LJ.LJLJ...";
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(input.to_string());
         assert_eq!(day.task2(), "8");
     }
@@ -285,7 +275,7 @@ mod tests {
     #[test]
     fn task_2_7() {
         let input = "FF7FSF7F7F7F7F7F---7\nL|LJ||||||||||||F--J\nFL-7LJLJ||||||LJL-77\nF--JF--7||LJLJ7F7FJ-\nL---JF-JLJ.||-FJLJJ7\n|F|F-JF---7F7-L7L|7|\n|FFJF7L7F-JF7|JL---7\n7-L-JL7||F7|L7F-7F7|\nL.L7LFJ|||||FJL7||LJ\nL7JLJL-JLJLJL--JLJ.L";
-        let mut day = Day10Of2023::new();
+        let mut day = Day10Of2023::default();
         day.parse(input.to_string());
         assert_eq!(day.task2(), "10");
     }

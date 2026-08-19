@@ -1,4 +1,4 @@
-use advent_of_code::Day;
+use crate::Day;
 
 
 const VELOCITY_DELTA: i64 = 1;
@@ -38,7 +38,7 @@ pub struct Day6Of2023 {
 }
 
 fn parse_line(line: String) -> Vec<i64> {
-    line.split_once(":").map(|(_, values)| values.trim().split_whitespace().map(|v| v.parse::<i64>().unwrap()).collect::<Vec<i64>>()).expect("Invalid input")
+    line.split_once(":").map(|(_, values)| values.split_whitespace().map(|v| v.parse::<i64>().unwrap()).collect::<Vec<i64>>()).expect("Invalid input")
 }
 
 impl Day6Of2023 {
@@ -61,9 +61,6 @@ impl Day6Of2023 {
 }
 
 impl Day for Day6Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 6)
-    }
 
     fn parse(&mut self, data: String) {
         let (times, distances) = data.split_once("\n").expect("Invalid input");
@@ -75,7 +72,7 @@ impl Day for Day6Of2023 {
     fn task1(&self) -> String {
         self.races.iter()
             .map(|r| r.get_possible_times_for_press_button().len())
-            .fold(1, |acc, curr| acc * curr)
+            .product::<usize>()
             .to_string()
     }
 
@@ -92,14 +89,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day6Of2023::new();
+        let mut day = Day6Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "288");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day6Of2023::new();
+        let mut day = Day6Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "71503");
     }

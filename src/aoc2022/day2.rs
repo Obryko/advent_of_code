@@ -1,4 +1,4 @@
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug, Copy, Clone)]
 enum RockPaperScissors {
@@ -68,10 +68,6 @@ pub struct Day2Of2022 {
 }
 
 impl Day for Day2Of2022 {
-    fn get_day(&self) -> (i32, i32) {
-        (2022, 2)
-    }
-
     fn parse(&mut self, data: String) {
         self.data = data
             .split('\n')
@@ -124,14 +120,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day2Of2022::new();
+        let mut day = Day2Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "15");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day2Of2022::new();
+        let mut day = Day2Of2022::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "12");
     }

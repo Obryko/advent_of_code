@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::ops::Add;
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug)]
 pub struct BingoCard {
@@ -38,10 +38,6 @@ pub struct Day4Of2023 {
 }
 
 impl Day for Day4Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 4)
-    }
-
     fn parse(&mut self, data: String) {
 
         self.data = data.lines().map(|line| {
@@ -68,7 +64,7 @@ impl Day for Day4Of2023 {
                 }
             }
         }
-        data.iter().map(|(_, card)| card).sum::<i32>().to_string()
+        data.values().sum::<i32>().to_string()
     }
 }
 
@@ -85,14 +81,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day4Of2023::new();
+        let mut day = Day4Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "13");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day4Of2023::new();
+        let mut day = Day4Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "30");
     }

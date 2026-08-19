@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use advent_of_code::Day;
+use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct Node(String);
@@ -22,10 +22,10 @@ impl<T> Either<T> where T: Clone {
         Self(left, right)
     }
     fn left(&self) -> T {
-        return self.0.clone();
+        self.0.clone()
     }
     fn right(&self) -> T {
-        return self.1.clone();
+        self.1.clone()
     }
     fn get(&self, dir: char) -> T {
         match dir {
@@ -68,10 +68,6 @@ const fn lcm(a: usize, b: usize) -> usize {
 }
 
 impl Day for Day8Of2023 {
-    fn get_day(&self) -> (i32, i32) {
-        (2023, 8)
-    }
-
     fn parse(&mut self, data: String) {
         let (steps, map) = data.split_once("\n\n").unwrap();
         self.steps = steps.chars().collect();
@@ -88,7 +84,7 @@ impl Day for Day8Of2023 {
 
     fn task1(&self) -> String {
         self
-            .find_end_node_value(Node("AAA".to_string()), |n| n.eq(&&Node("ZZZ".to_string())))
+            .find_end_node_value(Node("AAA".to_string()), |n| n.eq(&Node("ZZZ".to_string()) ))
             .to_string()
     }
 
@@ -112,14 +108,14 @@ mod tests {
 
     #[test]
     fn task_1_1() {
-        let mut day = Day8Of2023::new();
+        let mut day = Day8Of2023::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task1(), "2");
     }
 
     #[test]
     fn task_1_2() {
-        let mut day = Day8Of2023::new();
+        let mut day = Day8Of2023::default();
         day.parse(INPUT_2.to_string());
         assert_eq!(day.task1(), "6");
     }
@@ -128,7 +124,7 @@ mod tests {
 
     #[test]
     fn task_2() {
-        let mut day = Day8Of2023::new();
+        let mut day = Day8Of2023::default();
         day.parse(INPUT_3.to_string());
 
         let start = Instant::now();
