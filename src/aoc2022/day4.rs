@@ -1,44 +1,32 @@
+use crate::common::intervals::{Interval, IntervalError};
 use crate::Day;
 
 #[derive(Debug, Copy, Clone)]
-struct SectionRange(i32, i32);
-
-impl SectionRange {
-    pub fn new(value: String) -> Self {
-        let values = value
-            .split('-')
-            .map(|val| val.parse::<i32>().unwrap())
-            .collect::<Vec<i32>>();
-        SectionRange(values[0], values[1])
-    }
-
-    pub fn contain(self, other: SectionRange) -> bool {
-        self.0 <= other.0 && self.1 >= other.1
-    }
-
-    pub fn overlap(self, other: SectionRange) -> bool {
-        self.1 >= other.0 && other.1 >= self.1 && self.0 <= other.1
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-struct Pair(SectionRange, SectionRange);
+struct Pair(Interval, Interval);
 
 impl Pair {
-    pub fn new(value: String) -> Self {
-        let values = value.split(',').collect::<Vec<&str>>();
+    pub fn new(value: &str) -> Self {
+        Self::from_tuple(value.split_once(',').unwrap())
+    }
+
+    fn from_tuple((first, second): (&str, &str)) -> Self {
         Pair(
-            SectionRange::new(values[0].to_string()),
-            SectionRange::new(values[1].to_string()),
+            Self::parse_value(first).unwrap(),
+            Self::parse_value(second).unwrap(),
         )
     }
 
+    fn parse_value(value: &str) -> Result<Interval, IntervalError> {
+        let (start,end) = value.split_once('-').unwrap();
+        (start.parse::<i64>().unwrap(), end.parse::<i64>().unwrap()).try_into()
+    }
+
     pub fn contain(&self) -> bool {
-        self.0.contain(self.1) || self.1.contain(self.0)
+        self.0.contains_interval(&self.1) || self.1.contains_interval(&self.0)
     }
 
     pub fn overlap(&self) -> bool {
-        self.0.overlap(self.1) || self.1.overlap(self.0)
+        self.0.overlaps(&self.1)
     }
 }
 
@@ -50,9 +38,9 @@ pub struct Day4Of2022 {
 impl Day for Day4Of2022 {
     fn parse(&mut self, data: String) {
         self.data = data
-            .split('\n')
+            .lines()
             .filter(|pair| !pair.is_empty())
-            .map(|pair| Pair::new(pair.to_string()))
+            .map(Pair::new)
             .collect();
     }
 

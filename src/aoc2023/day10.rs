@@ -1,5 +1,6 @@
 use std::fmt::{Debug, Formatter};
 use crate::common::direction::Direction;
+use crate::common::grid::Grid;
 use crate::common::point::Point;
 use crate::Day;
 
@@ -75,45 +76,31 @@ impl Pipe {
 
 #[derive(Default)]
 pub struct Day10Of2023 {
-    data: Vec<Vec<Pipe>>,
+    data: Grid<Pipe>,
 }
 
 impl Debug for Day10Of2023 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for row in &self.data {
-            for pipe in row {
-                write!(f, "{:?} ", pipe)?;
-            }
-            writeln!(f)?;
-        }
-        Ok(())
+        write!(f, "{:?}", self.data)
     }
 }
 
 impl Day10Of2023 {
     fn get_start_position(&self) -> Point {
-        let y = self.data.iter().position(|row| row.iter().any(|pipe| pipe.is_start)).unwrap();
-        let x = self.data[y].iter().position(|pipe| pipe.is_start).unwrap();
-        (x, y).into()
+        self.data.positions().find(|point| self.data.get(*point).is_some_and(|pipe| pipe.is_start)).unwrap()
     }
-
-    fn get_pipe(&self, point: Point) -> &Pipe {
-        let (x,y): (usize, usize) = point.try_into().unwrap();
-        &self.data[y][x]
-    }
-
-    fn get_pipe_mut(&mut self, point: Point) -> &mut Pipe {
-        let (x,y): (usize, usize) = point.try_into().unwrap();
-        &mut self.data[y][x]
-    }
-
     fn set_start_type(&mut self) {
         let point = self.get_start_position();
-        let (x,y): (usize, usize) = point.try_into().unwrap();
-        let top = if y == 0 { false } else { self.get_pipe(point + Direction::North.delta()).has_connection(Direction::South) };
-        let bottom = if y == self.data.len() - 1  { false } else { self.get_pipe(point + Direction::South.delta()).has_connection(Direction::North) };
-        let left = if x == 0 { false } else { self.get_pipe(point + Direction::West.delta()).has_connection(Direction::East) };
-        let right = if x == self.data[y].len() - 1 { false } else { self.get_pipe(point + Direction::East.delta()).has_connection(Direction::West) };
+        let has_direction = |direction: Direction| -> bool {
+            self.data.get(point + direction.delta())
+                .is_some_and(|pipe| pipe.has_connection(direction.opposite()))
+        };
+
+        let top = has_direction(Direction::North);
+        let bottom = has_direction(Direction::South);
+        let left = has_direction(Direction::West);
+        let right = has_direction(Direction::East);
+
         let pipe_type = match (top, bottom, left, right) {
             (true, true, false, false) => PipeType::Straight(Direction::North, Direction::South),
             (false, false, true, true) => PipeType::Straight(Direction::West, Direction::East),
@@ -123,13 +110,13 @@ impl Day10Of2023 {
             (false, true, true, false) => PipeType::Curved(Direction::South, Direction::West),
             _ => panic!("Invalid pipe type")
         };
-        let pipe = self.get_pipe_mut(point);
+        let pipe = self.data.get_mut(point).unwrap();
         pipe.pipe_type = pipe_type;
     }
 
     fn get_pipe_polygon(&self) -> Vec<Point> {
         let mut point = self.get_start_position();
-        let mut current_pipe = self.get_pipe(point);
+        let mut current_pipe = self.data.get(point).unwrap();
         let mut current_direction = current_pipe.get_directions().0;
         let mut vertices: Vec<Point> = Vec::new();
 
@@ -138,7 +125,7 @@ impl Day10Of2023 {
             current_direction = current_pipe.get_connection(current_direction);
             point += current_direction.delta();
             current_direction = current_direction.opposite();
-            current_pipe = self.get_pipe(point);
+            current_pipe = self.data.get(point).unwrap();
             if current_pipe.is_start { break; }
         }
         vertices
@@ -161,8 +148,8 @@ fn is_point_in_polygon(point: Point, vertices: &[Point]) -> bool {
 impl Day for Day10Of2023 {
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| {
-            line.chars().map(Pipe::from_char).collect::<Vec<Pipe>>()
-        }).collect::<Vec<Vec<Pipe>>>();
+            line.chars().map(Pipe::from_char).collect::<Vec<_>>()
+        }).collect::<Vec<Vec<_>>>().try_into().unwrap();
         self.set_start_type();
     }
 
@@ -172,18 +159,13 @@ impl Day for Day10Of2023 {
 
     fn task2(&self) -> String {
         let vertices: Vec<Point> = self.get_pipe_polygon();
-        let mut inside = 0;
-        for (y, row) in self.data.iter().enumerate() {
-            for (x,_) in row.iter().enumerate() {
-                let point = (x, y).into();
-                if vertices.contains(&point) { continue; }
-                if is_point_in_polygon(point, &vertices) {
-                    inside += 1;
-                }
-            }
-        }
 
-        inside.to_string()
+        self.data
+            .positions()
+            .filter(|point| !vertices.contains(point))
+            .filter(|&point| is_point_in_polygon(point, &vertices))
+            .count()
+            .to_string()
     }
 }
 

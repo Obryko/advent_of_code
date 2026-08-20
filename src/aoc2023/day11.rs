@@ -46,13 +46,13 @@ impl Day11Of2023 {
         (0..self.data.height())
             .filter(|&y| {
                 (0..self.data.width()).all(|x| self.data.get((x, y).into()) == Some(&Space::Empty))
-            }).collect::<Vec<usize>>()
+            }).collect()
     }
     fn empty_columns(&self) -> Vec<usize> {
         (0..self.data.width())
             .filter(|&x| {
                 (0..self.data.height()).all(|y| self.data.get((x, y).into()) == Some(&Space::Empty))
-            }).collect::<Vec<usize>>()
+            }).collect()
     }
 
     fn distance_between(
@@ -60,6 +60,8 @@ impl Day11Of2023 {
         start: Point,
         end: Point,
         expansion_factor: i64,
+        empty_rows: &[usize],
+        empty_columns: &[usize],
     ) -> i64 {
         let distance = start.manhattan_distance(end);
         let min_y = start.y.min(end.y);
@@ -68,8 +70,7 @@ impl Day11Of2023 {
         let min_x = start.x.min(end.x);
         let max_x = start.x.max(end.x);
 
-        let empty_rows_between = self
-            .empty_rows()
+        let empty_rows_between = empty_rows
             .iter()
             .filter(|&&y| {
                 let y = y as i64;
@@ -77,8 +78,7 @@ impl Day11Of2023 {
             })
             .count() as i64;
 
-        let empty_columns_between = self
-            .empty_columns()
+        let empty_columns_between = empty_columns
             .iter()
             .filter(|&&x| {
                 let x = x as i64;
@@ -89,6 +89,8 @@ impl Day11Of2023 {
     }
 
     fn solve(&self, expansion_factor: i64) -> i64 {
+        let empty_rows: &[usize] = &self.empty_rows();
+        let empty_columns: &[usize] = &self.empty_columns();
         let galaxies = self
             .data
             .positions()
@@ -112,6 +114,8 @@ impl Day11Of2023 {
                             *start,
                             *end,
                             expansion_factor,
+                            empty_rows,
+                            empty_columns,
                         )
                     })
             })

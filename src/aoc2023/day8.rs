@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-
+use crate::common::math::lcm;
 use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -54,17 +54,6 @@ impl Day8Of2023 {
             .map(|pos| pos+1)
             .unwrap_or(0)
     }
-}
-
-const fn gcd(mut a: usize, mut b: usize) -> usize {
-    while b != 0 {
-        (a, b) = (b, a % b);
-    }
-    a
-}
-
-const fn lcm(a: usize, b: usize) -> usize {
-    a / gcd(a, b) * b
 }
 
 impl Day for Day8Of2023 {

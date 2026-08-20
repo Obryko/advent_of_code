@@ -1,38 +1,34 @@
 use std::collections::HashMap;
-use std::ops::Range;
 
 use crate::Day;
-use pariter::{IteratorExt, scope};
+use crate::common::intervals::Interval;
 
 #[derive(Debug, Copy, Clone)]
 struct CategoryMap {
-    destination: i64,
-    source: i64,
-    range: i64,
+    source: Interval,
+    offset: i64
 }
 
 impl CategoryMap {
-    pub fn from_string(string: String) -> Self {
-        let [destination_start, source_start, range]: [i64; 3] = string.trim().split(" ").map(|v| v.parse().unwrap()).collect::<Vec<_>>().try_into().unwrap();
-        Self::new(destination_start, source_start, range)
+    fn from_string(string: &str) -> Self {
+        let [destination_start, source_start, length]: [i64; 3] = string
+            .split_whitespace()
+            .map(|value| value.parse().unwrap())
+            .collect::<Vec<_>>()
+            .try_into()
+            .unwrap();
+
+        Self::new(destination_start, source_start, length)
     }
-    pub fn new(destination: i64, source: i64, range: i64) -> Self {
+    fn new(destination: i64, source: i64, length: i64) -> Self {
         Self {
-            destination,
-            source,
-            range,
+            offset: destination - source,
+            source: Interval::new(source, source + length - 1).unwrap(),
         }
     }
 
-    fn get_max_source(&self) -> i64 {
-        self.source + self.range - 1
-    }
-
-    pub fn get_destination_for_source(&self, source: i64) -> Option<i64> {
-        if !(source.ge(&self.source) && source.le(&self.get_max_source())) {
-            return None;
-        }
-        Some(self.destination + (source - self.source))
+    fn map_value(&self, source: i64) -> Option<i64> {
+        self.source.contains(source).then_some(self.offset + source)
     }
 }
 
@@ -49,7 +45,7 @@ struct Garden {
 
 
 impl Garden {
-    pub fn new(categories: HashMap<&str, String>) -> Self {
+    fn new(categories: HashMap<&str, String>) -> Self {
         Self {
             seed_to_soil: Garden::category_map_list_from_string(categories.get("seed-to-soil").unwrap()),
             soil_to_fertilizer: Garden::category_map_list_from_string(categories.get("soil-to-fertilizer").unwrap()),
@@ -61,24 +57,74 @@ impl Garden {
         }
     }
 
+    fn categories(&self) -> [&[CategoryMap]; 7] {
+        [
+            &self.seed_to_soil,
+            &self.soil_to_fertilizer,
+            &self.fertilizer_to_water,
+            &self.water_to_light,
+            &self.light_to_temperature,
+            &self.temperature_to_humidity,
+            &self.humidity_to_location,
+        ]
+    }
+
     fn category_map_list_from_string(string: &str) -> Vec<CategoryMap> {
-        string.split("\n").map(|v| CategoryMap::from_string(v.to_string())).collect()
+        string.lines().map(CategoryMap::from_string).collect()
     }
 
-    pub fn get_location_for_seed(&self, seed: i64) -> i64 {
-        let soil = get_destination_for_source(&self.seed_to_soil, seed);
-        let fertilizer = get_destination_for_source(&self.soil_to_fertilizer, soil);
-        let water = get_destination_for_source(&self.fertilizer_to_water, fertilizer);
-        let light = get_destination_for_source(&self.water_to_light, water);
-        let temperature = get_destination_for_source(&self.light_to_temperature, light);
-        let humidity = get_destination_for_source(&self.temperature_to_humidity, temperature);
-        get_destination_for_source(&self.humidity_to_location, humidity)
+    fn map_value(mapper: &[CategoryMap], source: i64) -> i64 {
+        mapper.iter().find_map(|v| v.map_value(source)).unwrap_or(source)
+    }
+
+    fn location_for_seed(&self, seed: i64) -> i64 {
+        self.categories()
+            .into_iter()
+            .fold(seed, |value, category| Self::map_value(category, value))
+    }
+
+    fn locations_for_seed_intervals(
+        &self,
+        intervals: Vec<Interval>,
+    ) -> Vec<Interval> {
+        self.categories()
+            .into_iter()
+            .fold(intervals, |value, category| Self::map_intervals(category, value))
+    }
+
+    fn map_interval(
+        category_maps: &[CategoryMap],
+        interval: Interval,
+    ) -> Vec<Interval> {
+        let mut mapped: Vec<Interval> = vec![];
+        let mut remaining = vec![interval];
+
+        for category_map in category_maps {
+            let mut next_remaining = vec![];
+            while let Some(interval) = remaining.pop() {
+                if let Some(overlap) = category_map.source.intersection(&interval) {
+                    mapped.push(overlap.shift(category_map.offset));
+                    next_remaining.extend(interval - overlap);
+                } else {
+                    next_remaining.push(interval);
+                }
+            }
+            remaining = next_remaining;
+        }
+        mapped.extend(remaining);
+        mapped
+    }
+
+    fn map_intervals(
+        category_maps: &[CategoryMap],
+        intervals: Vec<Interval>,
+    ) -> Vec<Interval> {
+        intervals.into_iter()
+            .flat_map(|interval| Self::map_interval(category_maps, interval))
+            .collect()
     }
 }
 
-fn get_destination_for_source(mapper: &[CategoryMap], source: i64) -> i64 {
-    mapper.iter().find_map(|v| v.get_destination_for_source(source)).unwrap_or(source)
-}
 
 #[derive(Default, Debug)]
 pub struct Day5Of2023 {
@@ -88,8 +134,8 @@ pub struct Day5Of2023 {
 
 impl Day for Day5Of2023 {
     fn parse(&mut self, data: String) {
-        let (seeds, categories) = data.split_once("\n").unwrap();
-        self.seeds = (seeds[7..]).split(" ").map(|v| v.parse().unwrap()).collect();
+        let (seeds, categories) = data.split_once('\n').unwrap();
+        self.seeds = (seeds[7..]).split_whitespace().map(|v| v.parse().unwrap()).collect();
         let categories_mappers = categories
             .split("\n\n")
             .filter_map(|category| category.split_once("map:\n").map(|(name, mapper)| (name.trim(), mapper.trim().to_string())))
@@ -99,33 +145,23 @@ impl Day for Day5Of2023 {
 
     fn task1(&self) -> String {
         self.seeds.iter()
-            .map(|seed| self.garden.get_location_for_seed(*seed))
+            .copied()
+            .map(|seed| self.garden.location_for_seed(seed))
             .min().unwrap().to_string()
     }
 
     fn task2(&self) -> String {
-        scope(|s| {
-            (0..(self.seeds.len() / 2))
-                .map(|i| i * 2)
-                .map(|i| {
-                    let start = *self.seeds.get(i).unwrap();
-                    let range = *self.seeds.get(i + 1).unwrap();
-                    start..(start + range - 1)
-                })
-                .parallel_map_scoped_custom(s, |o| o.threads(16), |seeds: Range<i64>| {
-                    println!("Start seeds range {:?}", seeds);
-                    let min = seeds.fold(i64::MAX,|acc,seed| {
-                        let location = self.garden.get_location_for_seed(seed);
-                        match location.le(&acc) {
-                            true => location,
-                            false => acc
-                        }
-                    });
-                    println!("{:?}", min);
-                    min
-                })
-                .min().unwrap().to_string()
-        }).unwrap()
+        let seeds: Vec<Interval> = self.seeds
+            .chunks_exact(2)
+            .map(|pair| {
+                let start = pair[0];
+                let length = pair[1];
+                (start, start + length - 1).try_into().unwrap()
+            }).collect();
+        self.garden.locations_for_seed_intervals(seeds)
+            .into_iter()
+            .map(|interval| interval.start())
+            .min().unwrap().to_string()
     }
 }
 
@@ -179,5 +215,79 @@ mod tests {
         let mut day = Day5Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "46");
+    }
+
+    #[test]
+    fn should_map_source_to_destination() {
+        let map = CategoryMap::new(50, 98, 2);
+
+        assert_eq!(map.map_value(98), Some(50));
+        assert_eq!(map.map_value(99), Some(51));
+        assert_eq!(map.map_value(100), None);
+    }
+
+    #[test]
+    fn should_map_intervals_for_garden() {
+        let categories_maps = vec![
+            CategoryMap::new(110, 10, 5),
+            CategoryMap::new(218, 18, 3)
+        ];
+
+        let input = Interval::new(8, 22).unwrap();
+
+        let mut result = Garden::map_interval(&categories_maps, input);
+        result.sort_by_key(|interval| interval.start());
+
+        assert_eq!(
+            result,
+            vec![
+                Interval::new(8, 9).unwrap(),
+                Interval::new(15, 17).unwrap(),
+                Interval::new(21, 22).unwrap(),
+                Interval::new(110, 114).unwrap(),
+                Interval::new(218, 220).unwrap(),
+            ]
+        );
+    }
+
+    #[test]
+    fn should_map_multiple_intervals_for_garden() {
+        let category_maps = vec![
+            CategoryMap::new(110, 10, 5),
+        ];
+
+        let intervals = vec![
+            Interval::new(8, 12).unwrap(),
+            Interval::new(20, 22).unwrap(),
+        ];
+
+        let mut result = Garden::map_intervals(&category_maps, intervals);
+        result.sort_by_key(|interval| interval.start());
+
+        assert_eq!(
+            result,
+            vec![
+                Interval::new(8, 9).unwrap(),
+                Interval::new(20, 22).unwrap(),
+                Interval::new(110, 112).unwrap(),
+            ]
+        );
+    }
+
+    #[test]
+    fn should_not_map_already_mapped_interval_twice_in_same_category() {
+        let category_maps = vec![
+            CategoryMap::new(20, 10, 3), // [10..12] -> [20..22]
+            CategoryMap::new(30, 20, 3), // [20..22] -> [30..32]
+        ];
+
+        let input = Interval::new(10, 12).unwrap();
+
+        let result = Garden::map_interval(&category_maps, input);
+
+        assert_eq!(
+            result,
+            vec![Interval::new(20, 22).unwrap()]
+        );
     }
 }
