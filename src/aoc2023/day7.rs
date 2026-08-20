@@ -22,29 +22,32 @@ enum Card {
 }
 
 impl Card {
-    fn from_str(s: char) -> Card {
-        match s {
-            '2' => Card::Two,
-            '3' => Card::Three,
-            '4' => Card::Four,
-            '5' => Card::Five,
-            '6' => Card::Six,
-            '7' => Card::Seven,
-            '8' => Card::Eight,
-            '9' => Card::Nine,
-            'T' => Card::Ten,
-            'J' => Card::Jack,
-            'Q' => Card::Queen,
-            'K' => Card::King,
-            'A' => Card::Ace,
-            _ => panic!("Invalid card")
+    fn jack_to_joker(self) -> Card {
+        match self {
+            Card::Jack => Card::Joker,
+            _ => self
         }
     }
+}
 
-    fn jack_to_joker(&self) -> &Card {
-        match self {
-            Card::Jack => &Card::Joker,
-            _ => self
+impl TryFrom<char> for Card {
+    type Error = char;
+    fn try_from(c: char) -> Result<Self, Self::Error> {
+        match c {
+            '2' => Ok(Card::Two),
+            '3' => Ok(Card::Three),
+            '4' => Ok(Card::Four),
+            '5' => Ok(Card::Five),
+            '6' => Ok(Card::Six),
+            '7' => Ok(Card::Seven),
+            '8' => Ok(Card::Eight),
+            '9' => Ok(Card::Nine),
+            'T' => Ok(Card::Ten),
+            'J' => Ok(Card::Jack),
+            'Q' => Ok(Card::Queen),
+            'K' => Ok(Card::King),
+            'A' => Ok(Card::Ace),
+            value => Err(value)
         }
     }
 }
@@ -64,113 +67,114 @@ enum HandType {
 struct Hand {
     cards: [Card; 5],
     bid: i32,
+    hand_type: HandType
+}
+
+impl From<(&str, &str)> for Hand {
+    fn from(value: (&str, &str)) -> Self {
+        let cards: [Card; 5] = value.0.chars().map(Card::try_from).collect::<Result<Vec<Card>, _>>().expect("Invalid hand").try_into().expect("Invalid hand");
+        let bid = value.1.parse::<i32>().expect("Invalid bid");
+        Self::new(cards, bid)
+    }
 }
 
 impl Hand {
-    fn new(hand: &str, bid: &str) -> Self {
+    fn new(cards: [Card;5], bid: i32) -> Self {
+        let hand_type = Self::get_type(&cards);
         Self {
-            cards: hand.chars().map(Card::from_str).collect::<Vec<Card>>().try_into().expect("Invalid hand"),
-            bid: bid.parse::<i32>().expect("Invalid bid"),
+            cards,
+            bid,
+            hand_type,
         }
     }
 
-    fn get_type_without_joker(types: HashMap<Card, usize>) -> HandType {
-        match types.values().collect::<Vec<&usize>>() {
-            values if values.len() == 5 => HandType::HighCard,
-            values if values.len() == 4 => HandType::OnePair,
-            values if values.len() == 1 => HandType::FiveOfAKind,
-            values if values.len() == 2 => match (values[0], values[1]) {
-                (4, 1) | (1, 4) => HandType::FourOfAKind,
-                (3, 2) | (2, 3) => HandType::FullHouse,
-                _ => panic!("Invalid type!")
-            },
-            values if values.len() == 3 => match (values[0], values[1], values[2]) {
-                (3, 1, 1) | (1, 1, 3) | (1, 3, 1) => HandType::ThreeOfAKind,
-                (2, 2, 1) | (1, 2, 2) | (2, 1, 2) => HandType::TwoPair,
-                _ => panic!("Invalid type!")
-            },
-            _ => panic!("Invalid type!")
-        }
-    }
-    fn get_type_with_joker(mut types: HashMap<Card, usize>) -> HandType {
-        let jokers = types.remove(&Card::Joker).unwrap_or(0);
+    fn get_type(cards: &[Card]) -> HandType {
+        let mut counts = HashMap::new();
 
-        if types.is_empty() {
-            types.insert(Card::Joker, jokers);
+        for &card in cards {
+            *counts.entry(card).or_insert(0) += 1;
+        }
+
+        let jokers = counts.remove(&Card::Joker).unwrap_or(0);
+
+        let mut counts = counts.values().copied().collect::<Vec<_>>();
+
+        if counts.is_empty() {
+            counts.push(jokers);
         } else {
-            let card = types.iter().max_by_key(|&(_, i)| i).map(|(&card, _)| card).unwrap();
-            types.entry(card).and_modify(|i| *i += jokers);
+            let max = counts.iter_mut().max().unwrap();
+            *max += jokers;
         }
 
-        Hand::get_type_without_joker(types)
-    }
+        counts.sort_unstable_by(|a, b| b.cmp(a));
 
-    fn get_type(&self) -> HandType {
-        let mut types: HashMap<Card, usize> = HashMap::new();
-        self.cards.iter().for_each(|&card| *types.entry(card).or_insert(0) += 1);
-
-        match types.contains_key(&Card::Joker) {
-            true => Hand::get_type_with_joker(types),
-            false => Hand::get_type_without_joker(types)
-        }
-    }
-
-    fn compare_cards(&self, other: &Hand) -> Ordering {
-        for (&s, &o) in self.cards.iter().zip(other.cards.iter()) {
-            match s.cmp(&o) {
-                Ordering::Equal => continue,
-                o => return o,
-            }
-        }
-        Ordering::Equal
-    }
-
-    fn compare_types(&self, other: &Hand) -> Ordering {
-        self.get_type().cmp(&other.get_type())
-    }
-
-    fn compare(&self, other: &Hand) -> Ordering {
-        match (self.compare_types(other), self.compare_cards(other)) {
-            (Ordering::Equal, Ordering::Equal) => Ordering::Equal,
-            (Ordering::Equal, Ordering::Greater) => Ordering::Greater,
-            (Ordering::Equal, Ordering::Less) => Ordering::Less,
-            (Ordering::Greater, _) => Ordering::Greater,
-            (Ordering::Less, _) => Ordering::Less,
+        match counts.as_slice() {
+            [5] => HandType::FiveOfAKind,
+            [4, 1] => HandType::FourOfAKind,
+            [3, 2] => HandType::FullHouse,
+            [3, 1, 1] => HandType::ThreeOfAKind,
+            [2, 2, 1] => HandType::TwoPair,
+            [2, 1, 1, 1] => HandType::OnePair,
+            [1, 1, 1, 1, 1] => HandType::HighCard,
+            _ => panic!("Invalid hand"),
         }
     }
 }
+
+impl Eq for Hand {}
+
+impl PartialEq<Self> for Hand {
+    fn eq(&self, other: &Self) -> bool {
+        self.cards == other.cards
+    }
+}
+
+impl PartialOrd<Self> for Hand {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Hand {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.hand_type
+            .cmp(&other.hand_type)
+            .then_with(|| self.cards.cmp(&other.cards))
+    }
+}
+
 
 #[derive(Debug, Default)]
 pub struct Day7Of2023 {
     data: Vec<Hand>,
 }
 
+impl Day7Of2023 {
+     fn total_winnings(data: &[Hand]) -> i32 {
+         data.iter().enumerate()
+             .map(|(i, hand)| (i as i32 + 1) * hand.bid)
+             .sum()
+     }
+}
+
 impl Day for Day7Of2023 {
     fn parse(&mut self, data: String) {
         self.data = data.lines()
-            .map(|line|
-                line.split_once(" ")
-                    .map(|(hand, bid)| Hand::new(hand, bid))
-                    .unwrap())
+            .map(|line| line.split_once(' ').map(Hand::from).unwrap())
             .collect();
-        self.data.sort_by(|a, b| a.compare(b));
+        self.data.sort();
     }
 
     fn task1(&self) -> String {
-        self.data.iter().enumerate()
-            .map(|(i, hand)| (i as i32 + 1) * hand.bid)
-            .sum::<i32>().to_string()
+        Self::total_winnings(&self.data).to_string()
     }
 
     fn task2(&self) -> String {
-        let mut data = self.data.iter().clone().map(|hand| Hand {
-            cards: hand.cards.map(|c| *c.jack_to_joker()),
-            bid: hand.bid,
-        }).collect::<Vec<Hand>>();
-        data.sort_by(|a, b| a.compare(b));
-        data.iter().enumerate()
-            .map(|(i, hand)| (i as i32 + 1) * hand.bid)
-            .sum::<i32>().to_string()
+        let mut data = self.data.iter().map(|hand|
+            Hand::new(hand.cards.map(Card::jack_to_joker), hand.bid)
+        ).collect::<Vec<_>>();
+        data.sort();
+        Self::total_winnings(&data).to_string()
     }
 }
 

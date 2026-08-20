@@ -1,27 +1,25 @@
-use std::collections::HashMap;
-use std::ops::Add;
+use std::collections::{HashSet};
 use crate::Day;
 
 #[derive(Debug)]
-pub struct BingoCard {
-    winning_number: Vec<i32>,
+struct BingoCard {
+    winning_numbers: HashSet<i32>,
     numbers: Vec<i32>,
 }
 
 impl BingoCard {
-    pub fn new(winning_number: String, numbers: String) -> Self {
+    pub fn new(winning_numbers: HashSet<i32>, numbers: Vec<i32>) -> Self {
         Self {
-            winning_number: Self::parse_numbers(winning_number),
-            numbers: Self::parse_numbers(numbers),
+            winning_numbers,
+            numbers,
         }
     }
 
-    fn parse_numbers(numbers: String) -> Vec<i32> {
-        numbers.split_whitespace().map(|n| n.parse().unwrap()).collect::<Vec<i32>>()
-    }
-
     fn count_won_numbers(&self) -> usize {
-        self.numbers.iter().filter(|n| self.winning_number.contains(n)).collect::<Vec<_>>().len()
+        self.numbers
+            .iter()
+            .filter(|n| self.winning_numbers.contains(n))
+            .count()
     }
 
     fn count_points(&self) -> i32 {
@@ -30,44 +28,56 @@ impl BingoCard {
             x => 2_i32.pow((x - 1) as u32)
         }
     }
+
+    fn parse_numbers(value: &str) -> impl Iterator<Item = i32> {
+        value.split_whitespace().map(|n| n.parse().unwrap())
+    }
+}
+
+impl From<(&str, &str)> for BingoCard {
+    fn from(value: (&str, &str)) -> Self {
+        let winning_numbers = Self::parse_numbers(value.0).collect::<HashSet<i32>>();
+        let numbers = Self::parse_numbers(value.1).collect::<Vec<i32>>();
+        Self::new(winning_numbers, numbers)
+    }
 }
 
 #[derive(Default, Debug)]
 pub struct Day4Of2023 {
-    data: Vec<(usize, BingoCard)>,
+    data: Vec<BingoCard>,
 }
 
 impl Day for Day4Of2023 {
     fn parse(&mut self, data: String) {
-
         self.data = data.lines().map(|line| {
-            let game = line.split(":").collect::<Vec<&str>>();
-            let game_number: usize = game[0].rsplit_once(" ").unwrap().1.parse().unwrap();
-
-            let card = game[1].split("|").collect::<Vec<&str>>();
-            let bingo_card: BingoCard = BingoCard::new(card[0].to_string(), card[1].to_string());
-            (game_number, bingo_card)
-        }).collect::<Vec<(usize, BingoCard)>>();
+            let (_, card) = line.split_once(':').unwrap();
+            BingoCard::from(card.split_once('|').unwrap())
+        }).collect();
     }
 
     fn task1(&self) -> String {
-        self.data.iter().map(|(_, card)| card.count_points()).sum::<i32>().to_string()
+        self.data.iter().map(BingoCard::count_points).sum::<i32>().to_string()
     }
 
     fn task2(&self) -> String {
-        let mut data = self.data.iter().map(|(game, _)| (*game, 1)).collect::<HashMap<usize, i32>>();
-        for (game, card) in self.data.iter() {
-            for x in 1..=card.count_won_numbers() {
-                let cards = data.get(&(game + x));
-                if let Some(value) = cards {
-                    data.insert(game + x, value.add(data.get(game).unwrap_or(&1)));
+        self.data
+            .iter()
+            .enumerate()
+            .scan(vec![1usize; self.data.len()], |copies, (index, card)| {
+                let current = copies[index];
+                let end = (index + card.count_won_numbers() + 1).min(copies.len());
+
+                for next in (index + 1)..end {
+                    copies[next] += current;
                 }
-            }
-        }
-        data.values().sum::<i32>().to_string()
+
+                Some(current)
+            })
+            .sum::<usize>()
+            .to_string()
+
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;

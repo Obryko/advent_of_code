@@ -1,44 +1,70 @@
 use crate::Day;
 
 #[derive(Default, Debug)]
-pub struct Day9Of2023 {
-    data: Vec<Vec<i32>>,
+struct Extrapolation {
+    previous_sum: i32,
+    next_sum: i32,
 }
 
-impl Day9Of2023 {
-    fn get_sum_of_history(&self, get_element: fn(&Vec<i32>) -> &i32, operation: fn(&i32, &i32) -> i32) -> i32 {
-        self.data.iter()
-            .map(|l| get_history_of_the_line(l, get_element, operation))
-            .sum::<i32>()
+impl Extrapolation {
+    fn new(data: &[Vec<i32>]) -> Self {
+        let (previous_sum, next_sum) = Self::sum_histories(data);
+        Self {
+            previous_sum,
+            next_sum,
+        }
+    }
+    fn sum_histories(data: &[Vec<i32>]) -> (i32, i32) {
+        data.iter()
+            .map(|line| Self::extrapolate(line))
+            .fold((0, 0), |(previous_sum, next_sum), (previous, next)| {
+                (previous_sum + previous, next_sum + next)
+            })
+    }
+
+    fn extrapolate(line: &[i32]) -> (i32, i32) {
+        if line.iter().all(|&value| value == 0) {
+            return (0, 0);
+        }
+
+        let differences = line
+            .windows(2)
+            .map(|window| window[1] - window[0])
+            .collect::<Vec<_>>();
+
+        let (previous_difference, next_difference) = Self::extrapolate(&differences);
+
+        let previous = line.first().unwrap() - previous_difference;
+        let next = line.last().unwrap() + next_difference;
+
+        (previous, next)
     }
 }
 
-fn get_history_of_the_line(line: &Vec<i32>, get_element: fn(&Vec<i32>) -> &i32, operation: fn(&i32, &i32) -> i32) -> i32 {
-    if line.iter().all(|x| x == &0) { return 0; }
-    let first =  get_element(line);
-
-    let next_line = (0..(line.len()-1)).map(|i| line[i+1]-line[i]).collect::<Vec<i32>>();
-
-    operation(first, &get_history_of_the_line(&next_line, get_element, operation))
+#[derive(Default, Debug)]
+pub struct Day9Of2023 {
+    data: Extrapolation
 }
 
 impl Day for Day9Of2023 {
     fn parse(&mut self, data: String) {
-        self.data = data
+        let histories = data
             .lines()
-            .map(|l|
-                l.split_whitespace()
-                    .map(|s| s.parse().unwrap())
-                    .collect::<Vec<i32>>())
-            .collect::<Vec<Vec<i32>>>();
+            .map(|line| {
+                line.split_whitespace()
+                    .map(|value| value.parse().unwrap())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+
+        self.data = Extrapolation::new(&histories);
     }
 
     fn task1(&self) -> String {
-        self.get_sum_of_history(|l: &Vec<i32>| l.last().unwrap(), |a,b| a+b).to_string()
+        self.data.next_sum.to_string()
     }
-
     fn task2(&self) -> String {
-        self.get_sum_of_history(|l: &Vec<i32>| l.first().unwrap(), |a,b| a-b).to_string()
+        self.data.previous_sum.to_string()
     }
 }
 

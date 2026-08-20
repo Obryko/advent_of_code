@@ -5,45 +5,57 @@ pub struct Day1Of2023 {
     data: Vec<String>,
 }
 
-const DIGITS: [(&str, i32); 10] = [
-    ("ZERO", 0),
-    ("ONE", 1),
-    ("TWO", 2),
-    ("THREE", 3),
-    ("FOUR", 4),
-    ("FIVE", 5),
-    ("SIX", 6),
-    ("SEVEN", 7),
-    ("EIGHT", 8),
-    ("NINE", 9),
+const DIGITS: [(&str, u32); 10] = [
+    ("zero", 0),
+    ("one", 1),
+    ("two", 2),
+    ("three", 3),
+    ("four", 4),
+    ("five", 5),
+    ("six", 6),
+    ("seven", 7),
+    ("eight", 8),
+    ("nine", 9),
 ];
 
-fn map_line_string_digits_into_digits(line: &str) -> Vec<i32> {
-    (0..line.len()).into_iter().filter_map(|i| -> Option<i32> {
-        let item = line.chars().nth(i).unwrap();
-        if item.is_numeric() {
-            return item.to_string().parse::<i32>().ok();
-        };
-        let sub_string = &line[i..];
-        for (digit, value) in DIGITS {
-            if sub_string.to_uppercase().starts_with(digit) {
-                return Some(value);
-            }
+impl Day1Of2023 {
+    fn calibration_value(line: &str) -> u32 {
+            let first = line
+                .chars()
+                .find_map(|c| c.to_digit(10))
+                .unwrap_or_default();
+
+            let last = line
+                .chars()
+                .rev()
+                .find_map(|c| c.to_digit(10))
+                .unwrap_or_default();
+
+            first * 10 + last
+    }
+
+    fn digit_at(input: &str) -> Option<u32> {
+        if let Some(digit) = input.chars().next()?.to_digit(10) {
+            return Some(digit as u32);
         }
 
-        None
-    }).collect()
-}
+        DIGITS
+            .iter()
+            .find_map(|(word, digit)| {
+                input.starts_with(word).then_some(*digit)
+            })
+    }
 
-fn get_digits_from_line(line: &str) -> Vec<i32> {
-    line.chars().filter(|char| char.is_numeric()).map(|char| char.to_string().parse::<i32>().unwrap()).collect()
-}
+    fn calibration_value_with_words(line: &str) -> u32 {
+        let mut digits = line
+            .char_indices()
+            .filter_map(|(index, _)| Self::digit_at(&line[index..]));
 
-fn find_number_in_line(line: Vec<i32>) -> i32 {
-    let first = line.first().unwrap();
-    let last = line.last().unwrap();
-    let value = first.to_string() + last.to_string().as_str();
-    value.parse::<i32>().unwrap()
+        let first = digits.next().unwrap();
+        let last = digits.last().unwrap_or(first);
+
+        first * 10 + last
+    }
 }
 
 impl Day for Day1Of2023 {
@@ -52,10 +64,12 @@ impl Day for Day1Of2023 {
     }
 
     fn task1(&self) -> String {
-        self.data.iter().map(|s| get_digits_from_line(s.as_str())).map(find_number_in_line).sum::<i32>().to_string()
+        self.data.iter()
+            .map(|s| Self::calibration_value(s))
+            .sum::<u32>().to_string()
     }
     fn task2(&self) -> String {
-        self.data.iter().map(|s| map_line_string_digits_into_digits(s.as_str())).map(find_number_in_line).sum::<i32>().to_string()
+        self.data.iter().map(|s| Self::calibration_value_with_words(s)).sum::<u32>().to_string()
     }
 }
 

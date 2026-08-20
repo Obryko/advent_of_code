@@ -1,103 +1,108 @@
-use std::collections::{HashMap, HashSet};
 use crate::Day;
 
-#[derive(Hash, Eq, PartialEq, Debug)]
-enum Color {
-    Red(i32),
-    Green(i32),
-    Blue(i32),
+#[derive(Default, Copy, Clone, Eq, PartialEq, Debug)]
+struct CubeSet {
+    red: i32,
+    green: i32,
+    blue: i32,
 }
 
-const MAX_RED: i32 = 12;
-const MAX_GREEN: i32 = 13;
-const MAX_BLUE: i32 = 14;
-
-impl Color {
-    fn new(color: &str, count: i32) -> Self {
+impl CubeSet {
+    fn new(red: i32, green:i32, blue:i32) -> Self {
+        Self { red, green, blue }
+    }
+    fn set(&mut self, color: &str, count: i32) {
         match color {
-            "red" => Color::Red(count),
-            "green" => Color::Green(count),
-            "blue" => Color::Blue(count),
+            "red" => self.red = count,
+            "green" => self.green = count,
+            "blue" => self.blue = count,
             _ => panic!("Unknown color: {}", color),
         }
     }
+    fn product(&self) -> i32 {
+        self.red * self.green * self.blue
+    }
 
-    fn get_value(&self) -> i32 {
-        match self {
-            Color::Red(count) => *count,
-            Color::Green(count) => *count,
-            Color::Blue(count) => *count,
+    fn fits(&self, other: &Self) -> bool {
+        self.red <= other.red && self.green <= other.green && self.blue <= other.blue
+    }
+}
+
+impl From<&str> for CubeSet {
+    fn from(s: &str) -> Self {
+        let mut cube = CubeSet::default();
+        let parts = s.split(',');
+
+        for part in parts {
+            let (count, color) = part.trim().split_once(' ').unwrap();
+            cube.set(color, count.parse().unwrap());
         }
+        cube
+    }
+}
+
+#[derive(Debug)]
+struct Game {
+    id: i32,
+    rounds: Vec<CubeSet>,
+}
+
+impl Game {
+
+    const MAX_CUBE_SET: CubeSet = CubeSet {
+        red: 12,
+        green: 13,
+        blue: 14,
+    };
+    fn new(id: i32, rounds: Vec<CubeSet>) -> Self {
+        Self { id, rounds }
     }
 
     fn is_possible(&self) -> bool {
-        match self {
-            Color::Green(count) => *count <= MAX_GREEN,
-            Color::Red(count) => *count <= MAX_RED,
-            Color::Blue(count) => *count <= MAX_BLUE,
-        }
+        self.rounds.iter().all(|round| round.fits(&Self::MAX_CUBE_SET))
     }
 
-    fn eq_to_string(&self, color: &str) -> bool {
-        match self {
-            Color::Red(_) => color == "red",
-            Color::Green(_) => color == "green",
-            Color::Blue(_) => color == "blue",
-        }
+    fn max_cube_set(&self) -> CubeSet {
+        self.rounds.iter().fold(CubeSet::default(), |acc, cube|
+            CubeSet::new(
+                acc.red.max(cube.red),
+                acc.green.max(cube.green),
+                acc.blue.max(cube.blue)
+            )
+        )
+    }
+}
+
+impl From<&str> for Game {
+    fn from(s: &str) -> Self {
+        let (name, game) = s.split_once(':').unwrap();
+        let rounds = game.split(';')
+            .map(|round| CubeSet::from(round)).collect::<Vec<CubeSet>>();
+        let id = name
+            .strip_prefix("Game ")
+            .unwrap()
+            .parse()
+            .unwrap();
+        Self::new(id, rounds)
     }
 }
 
 #[derive(Default, Debug)]
 pub struct Day2Of2023 {
-    data: HashMap<i32, Vec<HashSet<Color>>>,
-}
-
-impl Day2Of2023 {
-    fn get_max_in_round(rounds: &[HashSet<Color>], color: &str) -> i32 {
-        rounds.iter()
-            .map(|round| {
-                let res = round.iter().find(|&cube| cube.eq_to_string(color));
-                match res {
-                    Some(cube) => cube.get_value(),
-                    None => 1,
-                }
-            }).max().unwrap_or(1)
-    }
+    data: Vec<Game>,
 }
 
 impl Day for Day2Of2023 {
     fn parse(&mut self, data: String) {
-        self.data = data.lines().map(|line| {
-            let game = line.split(":").collect::<Vec<&str>>();
-            let game_number: i32 = game[0].rsplit_once(" ").unwrap().1.parse().unwrap();
-            let rounds = game[1].split(";").map(|round| {
-                round.split(",").map(|cube| {
-                    let res = cube.trim().split(" ").collect::<Vec<&str>>();
-                    let count = res[0].parse::<i32>().unwrap();
-                    Color::new(res[1], count)
-                }).collect::<HashSet<Color>>()
-            }).collect::<Vec<HashSet<Color>>>();
-
-            (game_number, rounds)
-        }
-        ).collect::<HashMap<i32, Vec<HashSet<Color>>>>();
+        self.data = data.lines().map(|line| Game::from(line)).collect();
     }
 
     fn task1(&self) -> String {
-        self.data.iter().filter(|(_, rounds)|
-            rounds.iter().all(|round|
-                round.iter().all(|cube| cube.is_possible())
-            )
-        ).map(|(game, _)| { game }).sum::<i32>().to_string()
+        self.data.iter().filter(|game| game.is_possible()).map(|game| game.id).sum::<i32>().to_string()
     }
 
     fn task2(&self) -> String {
-        self.data.values().map(|rounds| {
-            let red = Self::get_max_in_round(rounds, "red");
-            let green = Self::get_max_in_round(rounds, "green");
-            let blue = Self::get_max_in_round(rounds, "blue");
-            red * green * blue
-        }).sum::<i32>().to_string()
+        self.data.iter().map(|game| game.max_cube_set().product()).sum::<i32>().to_string()
     }
 }
 
@@ -119,5 +124,12 @@ mod tests {
         let mut day = Day2Of2023::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "2286");
+    }
+
+    #[test]
+    fn should_detect_impossible_cube_set() {
+        let cubes = CubeSet::new(11, 100, 1);
+
+        assert!(!cubes.fits(&Game::MAX_CUBE_SET));
     }
 }
