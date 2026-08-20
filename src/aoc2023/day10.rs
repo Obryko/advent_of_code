@@ -1,33 +1,8 @@
 use std::fmt::{Debug, Formatter};
+use crate::common::direction::Direction;
+use crate::common::point::Point;
 use crate::Day;
 
-#[derive(Debug, PartialEq, Eq, Hash)]
-enum Direction {
-    N,
-    S,
-    W,
-    E,
-}
-
-impl Direction {
-    fn move_in_direction(&self, x: usize, y: usize) -> (usize, usize) {
-        match self {
-            Direction::N => (x, y - 1),
-            Direction::S => (x, y + 1),
-            Direction::W => (x - 1, y),
-            Direction::E => (x + 1, y),
-        }
-    }
-
-    fn get_opposite(&self) -> &Direction {
-        match self {
-            Direction::N => &Direction::S,
-            Direction::S => &Direction::N,
-            Direction::W => &Direction::E,
-            Direction::E => &Direction::W
-        }
-    }
-}
 
 #[derive(Debug, PartialEq)]
 enum PipeType {
@@ -62,41 +37,37 @@ impl Pipe {
         }
     }
 
-    fn from_char(s: &char) -> Pipe {
+    fn from_char(s: char) -> Pipe {
         match s {
-            '|' => Self::new(PipeType::Straight(Direction::N, Direction::S)),
-            '-' => Self::new(PipeType::Straight(Direction::W, Direction::E)),
-            'J' => Self::new(PipeType::Curved(Direction::N, Direction::W)),
-            'L' => Self::new(PipeType::Curved(Direction::N, Direction::E)),
-            '7' => Self::new(PipeType::Curved(Direction::S, Direction::W)),
-            'F' => Self::new(PipeType::Curved(Direction::S, Direction::E)),
+            '|' => Self::new(PipeType::Straight(Direction::North, Direction::South)),
+            '-' => Self::new(PipeType::Straight(Direction::West, Direction::East)),
+            'J' => Self::new(PipeType::Curved(Direction::North, Direction::West)),
+            'L' => Self::new(PipeType::Curved(Direction::North, Direction::East)),
+            '7' => Self::new(PipeType::Curved(Direction::South, Direction::West)),
+            'F' => Self::new(PipeType::Curved(Direction::South, Direction::East)),
             '.' => Self::new(PipeType::Ground),
             'S' => Self::new(PipeType::Start),
             _ => panic!("Invalid direction")
         }
     }
 
-    fn has_connection(&self, direction: &Direction) -> bool {
+    fn has_connection(&self, direction: Direction) -> bool {
         match &self.pipe_type {
-            PipeType::Straight(first, second) => first == direction || second == direction,
-            PipeType::Curved(first, second) => first == direction || second == direction,
+            PipeType::Straight(first, second) | PipeType::Curved(first, second) => *first == direction || *second == direction,
             _ => false
         }
     }
-    fn get_connection(&self, direction: &Direction) -> &Direction {
+    fn get_connection(&self, direction: Direction) -> Direction {
         match &self.pipe_type {
-            PipeType::Straight(a, b) if a == direction => b,
-            PipeType::Straight(a, b) if b == direction => a,
-            PipeType::Curved(a, b) if a == direction => b,
-            PipeType::Curved(a, b) if b == direction => a,
+            PipeType::Straight(a, b) | PipeType::Curved(a, b) if *a == direction => *b,
+            PipeType::Straight(a, b) | PipeType::Curved(a, b) if *b == direction => *a,
             _ => panic!("Cannot move on this type")
         }
     }
 
-    fn get_directions(&self) -> (&Direction, &Direction) {
+    fn get_directions(&self) -> (Direction, Direction) {
         match &self.pipe_type {
-            PipeType::Straight(a, b) => (a, b),
-            PipeType::Curved(a, b) => (a, b),
+            PipeType::Straight(a, b) | PipeType::Curved(a, b) => (*a, *b),
             _ => panic!("Cannot move on this type")
         }
     }
@@ -120,63 +91,66 @@ impl Debug for Day10Of2023 {
 }
 
 impl Day10Of2023 {
-    fn get_start_position(&self) -> (usize, usize) {
+    fn get_start_position(&self) -> Point {
         let y = self.data.iter().position(|row| row.iter().any(|pipe| pipe.is_start)).unwrap();
         let x = self.data[y].iter().position(|pipe| pipe.is_start).unwrap();
-        (x, y)
+        (x, y).into()
     }
 
-    fn get_pipe(&self, x: usize, y: usize) -> &Pipe {
+    fn get_pipe(&self, point: Point) -> &Pipe {
+        let (x,y): (usize, usize) = point.try_into().unwrap();
         &self.data[y][x]
     }
 
-    fn get_pipe_mut(&mut self, x: usize, y: usize) -> &mut Pipe {
+    fn get_pipe_mut(&mut self, point: Point) -> &mut Pipe {
+        let (x,y): (usize, usize) = point.try_into().unwrap();
         &mut self.data[y][x]
     }
 
     fn set_start_type(&mut self) {
-        let (x, y) = self.get_start_position();
-        let top = if y == 0 { false } else { self.get_pipe(x, y - 1).has_connection(&Direction::S) };
-        let bottom = if y == self.data.len() - 1 { false } else { self.get_pipe(x, y + 1).has_connection(&Direction::N) };
-        let left = if x == 0 { false } else { self.get_pipe(x - 1, y).has_connection(&Direction::E) };
-        let right = if x == self.data[y].len() - 1 { false } else { self.get_pipe(x + 1, y).has_connection(&Direction::W) };
+        let point = self.get_start_position();
+        let (x,y): (usize, usize) = point.try_into().unwrap();
+        let top = if y == 0 { false } else { self.get_pipe(point + Direction::North.delta()).has_connection(Direction::South) };
+        let bottom = if y == self.data.len() - 1  { false } else { self.get_pipe(point + Direction::South.delta()).has_connection(Direction::North) };
+        let left = if x == 0 { false } else { self.get_pipe(point + Direction::West.delta()).has_connection(Direction::East) };
+        let right = if x == self.data[y].len() - 1 { false } else { self.get_pipe(point + Direction::East.delta()).has_connection(Direction::West) };
         let pipe_type = match (top, bottom, left, right) {
-            (true, true, false, false) => PipeType::Straight(Direction::N, Direction::S),
-            (false, false, true, true) => PipeType::Straight(Direction::W, Direction::E),
-            (true, false, false, true) => PipeType::Curved(Direction::N, Direction::E),
-            (true, false, true, false) => PipeType::Curved(Direction::N, Direction::W),
-            (false, true, false, true) => PipeType::Curved(Direction::S, Direction::E),
-            (false, true, true, false) => PipeType::Curved(Direction::S, Direction::W),
+            (true, true, false, false) => PipeType::Straight(Direction::North, Direction::South),
+            (false, false, true, true) => PipeType::Straight(Direction::West, Direction::East),
+            (true, false, false, true) => PipeType::Curved(Direction::North, Direction::East),
+            (true, false, true, false) => PipeType::Curved(Direction::North, Direction::West),
+            (false, true, false, true) => PipeType::Curved(Direction::South, Direction::East),
+            (false, true, true, false) => PipeType::Curved(Direction::South, Direction::West),
             _ => panic!("Invalid pipe type")
         };
-        let pipe = self.get_pipe_mut(x, y);
+        let pipe = self.get_pipe_mut(point);
         pipe.pipe_type = pipe_type;
     }
 
-    fn get_pipe_polygon(&self) -> Vec<(i32, i32)> {
-        let (mut x, mut y) = self.get_start_position();
-        let mut current_pipe = self.get_pipe(x, y);
+    fn get_pipe_polygon(&self) -> Vec<Point> {
+        let mut point = self.get_start_position();
+        let mut current_pipe = self.get_pipe(point);
         let mut current_direction = current_pipe.get_directions().0;
-        let mut vertices: Vec<(i32, i32)> = Vec::new();
+        let mut vertices: Vec<Point> = Vec::new();
 
         loop {
-            vertices.push((x as i32, y as i32));
+            vertices.push(point);
             current_direction = current_pipe.get_connection(current_direction);
-            (x, y) = current_direction.move_in_direction(x, y);
-            current_direction = current_direction.get_opposite();
-            current_pipe = self.get_pipe(x, y);
+            point += current_direction.delta();
+            current_direction = current_direction.opposite();
+            current_pipe = self.get_pipe(point);
             if current_pipe.is_start { break; }
         }
         vertices
     }
 }
 
-fn is_point_in_polygon(point: (i32, i32), vertices: Vec<(i32, i32)>) -> bool {
+fn is_point_in_polygon(point: Point, vertices: &[Point]) -> bool {
     let mut is_inside = false;
     let mut j = vertices.len() - 1;
     for i in 0..vertices.len() {
-        if (vertices[i].1 > point.1) != (vertices[j].1 > point.1) &&
-            point.0 < (vertices[j].0 - vertices[i].0) * (point.1 - vertices[i].1) / (vertices[j].1 - vertices[i].1) + vertices[i].0 {
+        if (vertices[i].y > point.y) != (vertices[j].y > point.y) &&
+            point.x < (vertices[j].x - vertices[i].x) * (point.y - vertices[i].y) / (vertices[j].y - vertices[i].y) + vertices[i].x {
             is_inside = !is_inside;
         }
         j = i;
@@ -187,7 +161,7 @@ fn is_point_in_polygon(point: (i32, i32), vertices: Vec<(i32, i32)>) -> bool {
 impl Day for Day10Of2023 {
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| {
-            line.chars().map(|c| Pipe::from_char(&c)).collect::<Vec<Pipe>>()
+            line.chars().map(Pipe::from_char).collect::<Vec<Pipe>>()
         }).collect::<Vec<Vec<Pipe>>>();
         self.set_start_type();
     }
@@ -197,12 +171,13 @@ impl Day for Day10Of2023 {
     }
 
     fn task2(&self) -> String {
-        let vertices: Vec<(i32, i32)> = self.get_pipe_polygon();
+        let vertices: Vec<Point> = self.get_pipe_polygon();
         let mut inside = 0;
         for (y, row) in self.data.iter().enumerate() {
             for (x,_) in row.iter().enumerate() {
-                if vertices.contains(&(x as i32, y as i32)) { continue; }
-                if is_point_in_polygon((x as i32, y as i32), vertices.clone()) {
+                let point = (x, y).into();
+                if vertices.contains(&point) { continue; }
+                if is_point_in_polygon(point, &vertices) {
                     inside += 1;
                 }
             }

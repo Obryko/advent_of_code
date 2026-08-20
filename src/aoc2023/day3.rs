@@ -1,8 +1,13 @@
 use std::collections::HashSet;
+use crate::common::grid::Grid;
+use crate::common::point::Point;
 use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
-struct SignWithPosition(char, usize, usize);
+struct SignWithPosition{
+    sign: char,
+    position: Point
+}
 
 #[derive(Debug, PartialEq, Eq)]
 struct NumberSign(i32, HashSet<SignWithPosition>);
@@ -12,21 +17,14 @@ pub struct Day3Of2023 {
     data: Vec<NumberSign>,
 }
 
-fn check_neighbors_in_grid(grid: &[Vec<char>], row_index: i32, col_index: i32) -> HashSet<SignWithPosition> {
+fn check_neighbors_in_grid(grid: &Grid<char>, point: Point) -> HashSet<SignWithPosition> {
     let mut neighbors: HashSet<SignWithPosition> = HashSet::new();
-    for row in (row_index - 1)..=(row_index + 1) {
-        for col in (col_index - 1)..=(col_index + 1) {
-            match (row, col) {
-                (r, c) if r == row_index && c == col_index => continue,
-                (r, c) if r < 0 || c < 0 => continue,
-                (r, c) if r as usize > grid.len() - 1 || c as usize > grid[0].len() - 1 => continue,
-                (r, c) => {
-                    let value = grid[r as usize][c as usize];
-                    if !(value.is_ascii_digit() || value.eq(&'.')) {
-                        neighbors.insert(SignWithPosition(value, r as usize, c as usize));
-                    }
-                }
-            }
+    for neighbor in point.neighbors8() {
+        let Some(value) = grid.get(neighbor) else {
+            continue;
+        };
+        if !value.is_ascii_digit() && *value != '.' {
+            neighbors.insert(SignWithPosition{sign: *value, position: neighbor});
         }
     }
     neighbors
@@ -34,9 +32,10 @@ fn check_neighbors_in_grid(grid: &[Vec<char>], row_index: i32, col_index: i32) -
 
 impl Day for Day3Of2023 {
     fn parse(&mut self, data: String) {
-        let grid = data.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+        let rows = data.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+        let grid = Grid::try_from(rows.as_slice()).unwrap();
         let mut res: Vec<NumberSign> = Vec::new();
-        for (row_index, row) in grid.iter().enumerate() {
+        for (row_index, row) in rows.iter().enumerate() {
             let mut num = String::new();
             let mut signs = HashSet::new();
             for (col_index, col) in row.iter().enumerate() {
@@ -48,7 +47,7 @@ impl Day for Day3Of2023 {
                     }
                     continue;
                 }
-                let neighbors = check_neighbors_in_grid(&grid, row_index as i32, col_index as i32);
+                let neighbors = check_neighbors_in_grid(&grid, (col_index as i32, row_index as i32).into());
                 num.push(*col);
                 signs.extend(neighbors);
             }
@@ -70,17 +69,16 @@ impl Day for Day3Of2023 {
     fn task2(&self) -> String {
         self.data
             .iter()
-            .filter(|number_sign| !number_sign.1.is_empty() && number_sign.1.iter().any(|sign| sign.0 == '*'))
-            .flat_map(|number_sign| number_sign.1.iter().collect::<Vec<&SignWithPosition>>())
-            .collect::<HashSet<&SignWithPosition>>()
+            .filter(|number_sign| number_sign.1.iter().any(|sign_with_position| sign_with_position.sign == '*'))
+            .flat_map(|number_sign| number_sign.1.iter())
+            .collect::<HashSet<_>>()
             .iter()
             .map(|sign| {
                 let gears = self.data.iter()
                     .filter(|number_sign|
-                        !number_sign.1.is_empty()
-                            && number_sign.1.iter().any(|other| sign.1 == other.1 && sign.2 == other.2))
+                        number_sign.1.iter().any(|other| sign.position == other.position))
                     .map(|number_sign| number_sign.0).collect::<Vec<i32>>();
-                if gears.is_empty() || gears.len() == 1 {
+                if gears.len() != 2 {
                     return 0;
                 }
                 gears.iter().product::<i32>()
