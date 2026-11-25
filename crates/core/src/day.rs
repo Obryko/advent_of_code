@@ -1,4 +1,3 @@
-use std::error::Error;
 
 type SolverFactory = fn() -> Box<dyn Day>;
 

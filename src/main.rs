@@ -1,6 +1,7 @@
 use advent_of_code::YEARS;
 use clap::Parser;
 use dotenvy::dotenv;
+use aoc_client::inputs::get_day_input;
 #[derive(Parser)]
 #[command(version, about)]
 struct Cli {
@@ -40,9 +41,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         _ => None,
     };
 
-    days.get(&day_number)
-        .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?
-        .run(task_number);
+
+
+    let day = days.get(&day_number)
+        .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?;
+
+    let input = get_day_input(year_number, day_number)?;
+    day.run(input, task_number);
 
     Ok(())
 }
