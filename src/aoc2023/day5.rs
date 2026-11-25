@@ -152,7 +152,7 @@ impl Day for Day5Of2023 {
 
     fn task2(&self) -> String {
         let seeds: Vec<Interval> = self.seeds
-            .chunks_exact(2)
+            .as_chunks::<2>().0.iter()
             .map(|pair| {
                 let start = pair[0];
                 let length = pair[1];

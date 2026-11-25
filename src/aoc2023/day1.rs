@@ -36,7 +36,7 @@ impl Day1Of2023 {
 
     fn digit_at(input: &str) -> Option<u32> {
         if let Some(digit) = input.chars().next()?.to_digit(10) {
-            return Some(digit as u32);
+            return Some(digit);
         }
 
         DIGITS
@@ -52,7 +52,7 @@ impl Day1Of2023 {
             .filter_map(|(index, _)| Self::digit_at(&line[index..]));
 
         let first = digits.next().unwrap();
-        let last = digits.last().unwrap_or(first);
+        let last = digits.next_back().unwrap_or(first);
 
         first * 10 + last
     }

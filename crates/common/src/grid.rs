@@ -32,21 +32,27 @@ impl<T> Grid<T> {
         }
     }
 
+    #[must_use]
     pub fn width(&self) -> usize {
         self.width
     }
+    #[must_use]
     pub fn height(&self) -> usize {
         self.height
     }
+    #[must_use]
     pub fn len(&self) -> usize {
         self.cells.len()
     }
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.cells.is_empty()
     }
+    #[must_use]
     pub fn contains(&self, point: Point) -> bool {
         self.cell_index(point).is_some()
     }
+    #[must_use]
     pub fn get(&self, point: Point) -> Option<&T> {
         let index = self.cell_index(point)?;
         self.cells.get(index)
@@ -89,7 +95,7 @@ impl<T: Display> Display for Grid<T> {
             for x in 0..self.width {
                 let point: Point = (x, y).into();
                 if let Some(value) = self.get(point) {
-                    write!(f, "{}", value)?;
+                    write!(f, "{value}")?;
                 }
             }
             writeln!(f)?;
@@ -114,15 +120,14 @@ impl Error for GridError {}
 impl Display for GridError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::EmptyRow { row } => write!(f, "Row {} is empty.", row),
+            Self::EmptyRow { row } => write!(f, "Row {row} is empty."),
             Self::InconsistentWidth {
                 expected,
                 actual,
                 row,
             } => write!(
                 f,
-                "Row {} has inconsistent width. Expected {}, got {}.",
-                row, expected, actual
+                "Row {row} has inconsistent width. Expected {expected}, got {actual}."
             ),
         }
     }
@@ -141,11 +146,11 @@ impl<T, const W: usize, const H: usize> From<[[T; W]; H]> for Grid<T> {
 impl<T: Clone> TryFrom<&[Vec<T>]> for Grid<T> {
     type Error = GridError;
     fn try_from(rows: &[Vec<T>]) -> Result<Self, Self::Error> {
-        if rows.iter().any(|row| row.is_empty()) {
+        if rows.iter().any(std::vec::Vec::is_empty) {
             return Err(Self::Error::EmptyRow { row: 0 });
         }
         let width = rows[0].len();
-        if rows.iter().map(|row| row.len()).any(|len| len != width) {
+        if rows.iter().map(std::vec::Vec::len).any(|len| len != width) {
             return Err(Self::Error::InconsistentWidth {
                 expected: width,
                 actual: 0,
@@ -164,11 +169,11 @@ impl<T: Clone> TryFrom<&[Vec<T>]> for Grid<T> {
 impl<T> TryFrom<Vec<Vec<T>>> for Grid<T> {
     type Error = GridError;
     fn try_from(rows: Vec<Vec<T>>) -> Result<Self, Self::Error> {
-        if rows.iter().any(|row| row.is_empty()) {
+        if rows.iter().any(std::vec::Vec::is_empty) {
             return Err(Self::Error::EmptyRow { row: 0 });
         }
         let width = rows[0].len();
-        if rows.iter().map(|row| row.len()).any(|len| len != width) {
+        if rows.iter().map(std::vec::Vec::len).any(|len| len != width) {
             return Err(Self::Error::InconsistentWidth {
                 expected: width,
                 actual: 0,

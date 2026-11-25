@@ -77,7 +77,7 @@ impl From<&str> for Game {
     fn from(s: &str) -> Self {
         let (name, game) = s.split_once(':').unwrap();
         let rounds = game.split(';')
-            .map(|round| CubeSet::from(round)).collect::<Vec<CubeSet>>();
+            .map(CubeSet::from).collect::<Vec<CubeSet>>();
         let id = name
             .strip_prefix("Game ")
             .unwrap()
@@ -94,7 +94,7 @@ pub struct Day2Of2023 {
 
 impl Day for Day2Of2023 {
     fn parse(&mut self, data: String) {
-        self.data = data.lines().map(|line| Game::from(line)).collect();
+        self.data = data.lines().map(Game::from).collect();
     }
 
     fn task1(&self) -> String {

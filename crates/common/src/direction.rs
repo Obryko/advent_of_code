@@ -9,6 +9,7 @@ pub enum Direction {
 }
 
 impl Direction {
+    #[must_use]
     pub fn all() -> [Direction; 4] {
         [
             Direction::North,
@@ -18,6 +19,7 @@ impl Direction {
         ]
     }
 
+    #[must_use]
     pub fn delta(&self) -> Point {
         match self {
             Direction::North => Point::new(0, -1),
@@ -27,6 +29,7 @@ impl Direction {
         }
     }
 
+    #[must_use]
     pub fn opposite(&self) -> Direction {
         match self {
             Direction::North => Direction::South,

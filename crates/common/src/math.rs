@@ -1,4 +1,5 @@
 /// Returns the greatest common divisor of two numbers.
+#[must_use]
 pub const fn gcd(mut a: usize, mut b: usize) -> usize {
     while b != 0 {
         let temp = b;
@@ -9,6 +10,7 @@ pub const fn gcd(mut a: usize, mut b: usize) -> usize {
 }
 
 /// Returns the least common multiple of two numbers.
+#[must_use]
 pub const fn lcm(a: usize, b: usize) -> usize {
     a * b / gcd(a, b)
 }

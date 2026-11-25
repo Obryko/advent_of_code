@@ -9,21 +9,25 @@ pub struct Point {
 }
 
 impl Point {
+    #[must_use]
     pub fn new(x: i64, y: i64) -> Self {
         Self { x, y }
     }
 
     /// Origin point
+    #[must_use]
     pub fn origin() -> Self {
         Self::new(0, 0)
     }
 
     /// Manhattan distance between two points
+    #[must_use]
     pub fn manhattan_distance(&self, other: Self) -> i64 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 
     /// 4 Neighbors of a point
+    #[must_use]
     pub fn neighbors4(&self) -> [Self; 4] {
         [
             Self::new(self.x, self.y - 1),
@@ -34,6 +38,7 @@ impl Point {
     }
 
     /// 8 Neighbors of a point
+    #[must_use]
     pub fn neighbors8(&self) -> [Self; 8] {
         let neighbors4 = self.neighbors4();
 
@@ -89,7 +94,7 @@ impl From<(i64, i64)> for Point {
 }
 impl From<(i32, i32)> for Point {
     fn from((x, y): (i32, i32)) -> Self {
-        Self::new(x as i64, y as i64)
+        Self::new(i64::from(x), i64::from(y))
     }
 }
 #[derive(Debug, PartialEq, Eq)]
