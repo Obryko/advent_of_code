@@ -1,4 +1,4 @@
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Default, Debug)]
 struct Extrapolation {

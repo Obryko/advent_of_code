@@ -1,5 +1,5 @@
 use std::collections::{HashSet};
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Debug)]
 struct BingoCard {

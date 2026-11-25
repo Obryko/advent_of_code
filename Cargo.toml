@@ -4,6 +4,7 @@ resolver = "3"
 
 [workspace.dependencies]
 aoc-common = { path = "crates/common" }
+aoc-core = { path = "crates/core" }
 
 [workspace.lints]
 rust = {unsafe_code = "forbid" }
@@ -25,6 +26,7 @@ edition = "2024"
 
 [dependencies]
 aoc-common.workspace = true
+aoc-core.workspace = true
 clap = { version = "4", features = ['derive'] }
 dotenvy = "0.15"
 reqwest = { version = "0.13", features = ["blocking"]}

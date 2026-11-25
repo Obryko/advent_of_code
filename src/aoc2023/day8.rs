@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use aoc_common::math::lcm;
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct Node(String);

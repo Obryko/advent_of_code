@@ -1,5 +1,5 @@
 use aoc_common::intervals::{Interval, IntervalError};
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Debug, Copy, Clone)]
 struct Pair(Interval, Interval);

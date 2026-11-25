@@ -35,14 +35,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .ok_or_else(|| format!("Year {year_number} has no implemented days."))?,
     };
     let task_number = match cli.part {
-        Some(1) => Some(advent_of_code::Part::One),
-        Some(2) => Some(advent_of_code::Part::Two),
+        Some(1) => Some(aoc_core::Part::One),
+        Some(2) => Some(aoc_core::Part::Two),
         _ => None,
     };
 
     days.get(&day_number)
         .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?
-        .run(task_number)?;
+        .run(task_number);
 
     Ok(())
 }

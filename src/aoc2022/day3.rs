@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Default)]
 pub struct Day3Of2022 {

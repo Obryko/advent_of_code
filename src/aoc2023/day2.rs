@@ -1,4 +1,4 @@
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Default, Copy, Clone, Eq, PartialEq, Debug)]
 struct CubeSet {

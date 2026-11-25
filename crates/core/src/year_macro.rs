@@ -5,10 +5,7 @@ macro_rules! year {
         pub fn get_year_days() -> ::std::collections::BTreeMap<usize, $crate::RegisteredDay> {
             #[allow(unused_mut)]
             let mut days: ::std::collections::BTreeMap<usize, $crate::RegisteredDay> = ::std::collections::BTreeMap::new();
-            $(days.insert(
-                $n,
-                $crate::RegisteredDay::new($year, $n, || Box::new($module::$ty::default()) as Box<dyn $crate::Day>),
-            );)*
+            $(days.insert($n, $crate::RegisteredDay::new::<$module::$ty>($year,$n));)*
             days
         }
     };

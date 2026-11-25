@@ -1,4 +1,4 @@
-crate::year! {
+aoc_core::year! {
     2023,
     1 => day1::Day1Of2023,
     2 => day2::Day2Of2023,

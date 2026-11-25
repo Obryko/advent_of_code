@@ -7,6 +7,7 @@ name = "advent_of_code"
 version = "0.1.0"
 dependencies = [
  "aoc-common",
+ "aoc-core",
  "clap",
  "dotenvy",
  "reqwest",
@@ -64,6 +65,10 @@ dependencies = [
 
 [[package]]
 name = "aoc-common"
+version = "0.0.0"
+
+[[package]]
+name = "aoc-core"
 version = "0.0.0"
 
 [[package]]

@@ -1,4 +1,4 @@
-use crate::Day;
+use aoc_core::Day;
 
 struct Command(usize, usize, usize);
 

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::Day;
+use aoc_core::Day;
 
 #[derive(Default)]
 pub struct Day6Of2022 {

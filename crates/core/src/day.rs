@@ -1,7 +1,6 @@
-use crate::runner::inputs::get_day_input;
 use std::error::Error;
 
-pub type DayCtor = fn() -> Box<dyn Day>;
+type SolverFactory = fn() -> Box<dyn Day>;
 
 pub enum Part {
     One,
@@ -17,20 +16,24 @@ pub trait Day {
 pub struct RegisteredDay {
     year: usize,
     day: usize,
-    solver_ctor: DayCtor,
+    solver_factory: SolverFactory,
 }
 
 impl RegisteredDay {
-    pub fn new(year: usize, day: usize, solver_ctor: DayCtor) -> Self {
+    #[must_use]
+    pub fn new<T>(year: usize, day: usize) -> Self
+    where
+        T: Day + Default + 'static,
+    {
         Self {
             year,
             day,
-            solver_ctor,
+            solver_factory: || Box::new(T::default()),
         }
     }
-    pub fn run(&self, part: Option<Part>) -> Result<(), Box<dyn Error>> {
-        let mut solver = (self.solver_ctor)();
-        self.load(solver.as_mut())?;
+    pub fn run(&self, input: String, part: Option<Part>) {
+        let mut solver = (self.solver_factory)();
+        solver.parse(input);
         match part {
             Some(Part::One) => self.timed_task1(solver.as_ref()),
             Some(Part::Two) => self.timed_task2(solver.as_ref()),
@@ -38,8 +41,7 @@ impl RegisteredDay {
                 self.timed_task1(solver.as_ref());
                 self.timed_task2(solver.as_ref());
             }
-        };
-        Ok(())
+        }
     }
 
     fn timed_task1(&self, solver: &dyn Day) {
@@ -47,16 +49,6 @@ impl RegisteredDay {
     }
     fn timed_task2(&self, solver: &dyn Day) {
         timed(2, || solver.task2());
-    }
-
-    fn load(&self, solver: &mut dyn Day) -> Result<(), Box<dyn Error>> {
-        let data = get_day_input(self.year, self.day)?;
-        println!(
-            "----- Parsing data for a Day {} Year {} -----",
-            self.day, self.year
-        );
-        solver.parse(data);
-        Ok(())
     }
 }
 
