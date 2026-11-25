@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::common::math::lcm;
+use aoc_common::math::lcm;
 use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
-use crate::common::grid::Grid;
-use crate::common::point::Point;
+use aoc_common::grid::Grid;
+use aoc_common::point::Point;
 use crate::Day;
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]

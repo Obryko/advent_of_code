@@ -1,4 +1,4 @@
-use crate::common::point::Point;
+use crate::point::Point;
 use std::error::Error;
 use std::fmt::Display;
 use std::ops::{Index, IndexMut};

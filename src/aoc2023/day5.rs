@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::Day;
-use crate::common::intervals::Interval;
+use aoc_common::intervals::Interval;
 
 #[derive(Debug, Copy, Clone)]
 struct CategoryMap {

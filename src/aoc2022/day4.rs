@@ -1,4 +1,4 @@
-use crate::common::intervals::{Interval, IntervalError};
+use aoc_common::intervals::{Interval, IntervalError};
 use crate::Day;
 
 #[derive(Debug, Copy, Clone)]

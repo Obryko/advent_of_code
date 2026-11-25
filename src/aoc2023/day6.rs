@@ -1,4 +1,4 @@
-use crate::common::intervals::Interval;
+use aoc_common::intervals::Interval;
 use crate::Day;
 
 
