@@ -3,18 +3,6 @@
 version = 4
 
 [[package]]
-name = "advent_of_code"
-version = "0.1.0"
-dependencies = [
- "aoc-client",
- "aoc-common",
- "aoc-core",
- "aoc-solutions",
- "clap",
- "dotenvy",
-]
-
-[[package]]
 name = "anstream"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -62,6 +50,17 @@ dependencies = [
  "anstyle",
  "once_cell_polyfill",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "aoc-cli"
+version = "0.0.0"
+dependencies = [
+ "aoc-client",
+ "aoc-core",
+ "aoc-solutions",
+ "clap",
+ "dotenvy",
 ]
 
 [[package]]
