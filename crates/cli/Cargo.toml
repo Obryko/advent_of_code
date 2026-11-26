@@ -14,3 +14,7 @@ dotenvy = "0.15"
 
 [lints]
 workspace = true
+
+[[bin]]
+name = "aoc"
+path = "src/main.rs"
