@@ -1,7 +1,7 @@
-mod day; 
-mod registry;
-mod part;
+mod day;
 mod execution;
+mod part;
+mod registry;
 mod year;
 
 pub use day::{Day, RegisteredDay};

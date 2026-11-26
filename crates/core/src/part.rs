@@ -1,6 +1,6 @@
+use crate::Day;
 use std::fmt::Display;
 use std::time::Duration;
-use crate::Day;
 
 pub struct PartResult {
     pub part: Part,

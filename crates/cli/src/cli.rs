@@ -1,7 +1,6 @@
-use std::error::Error;
-use clap::{Parser, Subcommand};
-use crate::commands::{Command, CommandResult};
 use crate::commands::run::Run;
+use crate::commands::{Command, CommandResult};
+use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]

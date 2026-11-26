@@ -1,8 +1,8 @@
-use clap::Args;
-use aoc_client::inputs::get_day_input;
-use aoc_solutions::REGISTRY;
 use crate::commands::{Command, CommandResult};
 use crate::output;
+use aoc_client::inputs::get_day_input;
+use aoc_solutions::REGISTRY;
+use clap::Args;
 
 #[derive(Args)]
 pub struct Run {
@@ -19,16 +19,16 @@ pub struct Run {
 
 impl Command for Run {
     fn execute(self) -> CommandResult {
-        let year_number = self.year
+        let year_number = self
+            .year
             .or_else(|| REGISTRY.latest_year())
             .ok_or_else(|| "No latest year found.".to_string())?;
 
-        let day_number = self.day
+        let day_number = self
+            .day
             .map(usize::from)
             .or_else(|| REGISTRY.latest_day(year_number))
-            .ok_or_else(|| {
-                format!("Year {year_number} has no implemented days.")
-            })?;
+            .ok_or_else(|| format!("Year {year_number} has no implemented days."))?;
 
         let task_number = match self.part {
             Some(1) => Some(aoc_core::Part::One),
@@ -36,13 +36,11 @@ impl Command for Run {
             _ => None,
         };
 
-        let day = REGISTRY.find(year_number, day_number)
+        let day = REGISTRY
+            .find(year_number, day_number)
             .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?;
 
         let input = get_day_input(year_number, day_number)?;
-
-        println!("\n🎄 Advent of Code {year_number} · Day {day_number:02}");
-        println!("────────────────────────────────────────");
 
         let results = day.run(input, task_number);
 

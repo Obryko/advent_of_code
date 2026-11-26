@@ -12,11 +12,7 @@ impl Registry {
     pub fn iter(&self) -> impl Iterator<Item = &RegisteredDay> {
         self.groups.iter().flat_map(|group| group.iter())
     }
-    pub fn find(
-        &self,
-        year: usize,
-        day: usize,
-    ) -> Option<&RegisteredDay> {
+    pub fn find(&self, year: usize, day: usize) -> Option<&RegisteredDay> {
         self.iter().find(|d| d.year == year && d.day == day)
     }
 
@@ -25,10 +21,7 @@ impl Registry {
     }
 
     pub fn latest_day(&self, year: usize) -> Option<usize> {
-        self.iter()
-            .filter(|d| d.year == year)
-            .map(|d| d.day)
-            .max()
+        self.iter().filter(|d| d.year == year).map(|d| d.day).max()
     }
 
     pub fn latest(&self) -> Option<&RegisteredDay> {

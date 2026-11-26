@@ -1,9 +1,7 @@
-use crate::{Part, PartResult};
 use crate::execution::timed;
+use crate::{Part, PartResult};
 
 type SolverFactory = fn() -> Box<dyn Day>;
-
-
 
 pub trait Day {
     fn parse(&mut self, data: String);
@@ -41,5 +39,3 @@ impl RegisteredDay {
         }
     }
 }
-
-
