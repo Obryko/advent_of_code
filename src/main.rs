@@ -1,4 +1,4 @@
-use advent_of_code::YEARS;
+use aoc_solutions::YEARS;
 use clap::Parser;
 use dotenvy::dotenv;
 use aoc_client::inputs::get_day_input;

@@ -1,0 +1,13 @@
+[package]
+name = "aoc-solutions"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+
+[dependencies]
+aoc-core.workspace = true
+aoc-common.workspace = true
+
+[lints]
+workspace = true

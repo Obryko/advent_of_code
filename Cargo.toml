@@ -1,11 +1,13 @@
 [workspace]
 members = ["crates/*"]
+default-members = [".", "crates/*"]
 resolver = "3"
 
 [workspace.dependencies]
 aoc-common = { path = "crates/common" }
 aoc-core = { path = "crates/core" }
 aoc-client = { path = "crates/client" }
+aoc-solutions = { path = "crates/solutions" }
 
 [workspace.lints]
 rust = {unsafe_code = "forbid" }
@@ -29,5 +31,6 @@ edition = "2024"
 aoc-common.workspace = true
 aoc-core.workspace = true
 aoc-client.workspace = true
+aoc-solutions.workspace = true
 clap = { version = "4", features = ['derive'] }
 dotenvy = "0.15"

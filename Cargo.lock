@@ -9,6 +9,7 @@ dependencies = [
  "aoc-client",
  "aoc-common",
  "aoc-core",
+ "aoc-solutions",
  "clap",
  "dotenvy",
 ]
@@ -78,6 +79,14 @@ version = "0.0.0"
 [[package]]
 name = "aoc-core"
 version = "0.0.0"
+
+[[package]]
+name = "aoc-solutions"
+version = "0.0.0"
+dependencies = [
+ "aoc-common",
+ "aoc-core",
+]
 
 [[package]]
 name = "atomic-waker"
