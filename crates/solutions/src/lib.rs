@@ -2,7 +2,7 @@ mod aoc2015;
 mod aoc2022;
 mod aoc2023;
 
-use aoc_core::registry::Registry;
+use aoc_core::Registry;
 
 pub static REGISTRY: Registry = Registry::new(&[
     aoc2015::DAYS,

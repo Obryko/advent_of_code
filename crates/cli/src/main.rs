@@ -20,22 +20,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
     let cli = Cli::parse();
 
-    let year_number: usize = cli.year.unwrap_or(REGISTRY.latest().unwrap().year);
+    let year_number = cli.year
+        .or_else(|| REGISTRY.latest_year())
+        .ok_or_else(|| "No latest year found.".to_string())?;
 
-    let day_number: usize = cli.day
-        .map(|d| d as usize)
-        .unwrap_or(
-            REGISTRY.latest_day(year_number)
-                .ok_or_else(|| format!("Year {year_number} has no implemented days."))?
-        );
+    let day_number = cli.day
+        .map(usize::from)
+        .or_else(|| REGISTRY.latest_day(year_number))
+        .ok_or_else(|| {
+            format!("Year {year_number} has no implemented days.")
+        })?;
 
     let task_number = match cli.part {
         Some(1) => Some(aoc_core::Part::One),
         Some(2) => Some(aoc_core::Part::Two),
         _ => None,
     };
-
-
 
     let day = REGISTRY.find(year_number, day_number)
         .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?;

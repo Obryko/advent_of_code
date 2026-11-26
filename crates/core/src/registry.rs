@@ -10,7 +10,7 @@ impl Registry {
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &RegisteredDay> {
-        self.groups.iter().map(|group| group.into_iter()).flatten()
+        self.groups.iter().flat_map(|group| group.iter())
     }
     pub fn find(
         &self,
@@ -32,7 +32,6 @@ impl Registry {
     }
 
     pub fn latest(&self) -> Option<&RegisteredDay> {
-        self.latest_day(self.latest_year()?)
-            .and_then(|day| self.find(self.latest_year()?, day))
+        self.iter().max_by_key(|d| (d.year, d.day))
     }
 }
