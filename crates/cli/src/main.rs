@@ -41,7 +41,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?;
 
     let input = get_day_input(year_number, day_number)?;
-    day.run(input, task_number);
+
+    println!("\n🎄 Advent of Code {year_number} · Day {day_number:02}");
+    println!("────────────────────────────────────────");
+
+    for result in day.run(input, task_number) {
+        println!(
+            "  ⭐ Part {}  │  {:<20} │  {:>10.3?}",
+            result.part,
+            result.answer,
+            result.duration,
+        );
+    }
+
+    println!("────────────────────────────────────────\n");
 
     Ok(())
 }
