@@ -42,11 +42,11 @@ impl Extrapolation {
 }
 
 #[derive(Default, Debug)]
-pub struct Day9Of2023 {
+pub struct Solver {
     data: Extrapolation
 }
 
-impl Day for Day9Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         let histories = data
             .lines()
@@ -76,14 +76,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day9Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "114");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day9Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "2");
     }

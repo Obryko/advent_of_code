@@ -63,11 +63,11 @@ impl RockPaperScissors {
 }
 
 #[derive(Default)]
-pub struct Day2Of2022 {
+pub struct Solver {
     data: Vec<(char, char)>,
 }
 
-impl Day for Day2Of2022 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data
             .split('\n')
@@ -120,14 +120,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day2Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "15");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day2Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "12");
     }

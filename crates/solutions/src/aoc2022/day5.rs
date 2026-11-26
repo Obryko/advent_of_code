@@ -3,12 +3,12 @@ use aoc_core::Day;
 struct Command(usize, usize, usize);
 
 #[derive(Default)]
-pub struct Day5Of2022 {
+pub struct Solver {
     commands: Vec<Command>,
     board: Vec<Vec<char>>,
 }
 
-impl Day5Of2022 {
+impl Solver {
 
     fn parse_commands(&mut self, value: String) {
         self.commands = value
@@ -60,7 +60,7 @@ impl Day5Of2022 {
     }
 }
 
-impl Day for Day5Of2022 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         let inputs = data.split("\n\n").collect::<Vec<&str>>();
 
@@ -109,14 +109,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day5Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "CMZ");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day5Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "MCD");
     }

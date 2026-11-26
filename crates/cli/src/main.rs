@@ -1,4 +1,4 @@
-use aoc_solutions::YEARS;
+use aoc_solutions::{REGISTRY};
 use clap::Parser;
 use dotenvy::dotenv;
 use aoc_client::inputs::get_day_input;
@@ -20,21 +20,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
     let cli = Cli::parse();
 
-    let year_number: usize = cli.year.unwrap_or(YEARS.last().unwrap().0);
+    let year_number: usize = cli.year.unwrap_or(REGISTRY.latest().unwrap().year);
 
-    let days = YEARS
-        .iter()
-        .find(|y| y.0 == year_number)
-        .ok_or_else(|| format!("Year {year_number} not found."))?
-        .1();
+    let day_number: usize = cli.day
+        .map(|d| d as usize)
+        .unwrap_or(
+            REGISTRY.latest_day(year_number)
+                .ok_or_else(|| format!("Year {year_number} has no implemented days."))?
+        );
 
-    let day_number = match cli.day {
-        Some(d) => d as usize,
-        None => *days
-            .keys()
-            .next_back()
-            .ok_or_else(|| format!("Year {year_number} has no implemented days."))?,
-    };
     let task_number = match cli.part {
         Some(1) => Some(aoc_core::Part::One),
         Some(2) => Some(aoc_core::Part::Two),
@@ -43,7 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 
 
-    let day = days.get(&day_number)
+    let day = REGISTRY.find(year_number, day_number)
         .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?;
 
     let input = get_day_input(year_number, day_number)?;

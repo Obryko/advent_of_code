@@ -37,12 +37,12 @@ impl<T> Either<T> where T: Clone {
 }
 
 #[derive(Default, Debug)]
-pub struct Day8Of2023 {
+pub struct Solver {
     steps: Vec<char>,
     map: HashMap<Node, Either<Node>>,
 }
 
-impl Day8Of2023 {
+impl Solver {
     fn find_end_node_value<'a, F: Fn(&Node) -> bool + 'a>(&self, start_node: Node, is_end_node: F) -> usize {
         let mut current_node = start_node;
         self.steps.iter()
@@ -56,7 +56,7 @@ impl Day8Of2023 {
     }
 }
 
-impl Day for Day8Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         let (steps, map) = data.split_once("\n\n").unwrap();
         self.steps = steps.chars().collect();
@@ -97,14 +97,14 @@ mod tests {
 
     #[test]
     fn task_1_1() {
-        let mut day = Day8Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task1(), "2");
     }
 
     #[test]
     fn task_1_2() {
-        let mut day = Day8Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_2.to_string());
         assert_eq!(day.task1(), "6");
     }
@@ -113,7 +113,7 @@ mod tests {
 
     #[test]
     fn task_2() {
-        let mut day = Day8Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_3.to_string());
 
         let start = Instant::now();

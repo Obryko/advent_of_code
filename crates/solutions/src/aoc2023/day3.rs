@@ -13,7 +13,7 @@ struct SignWithPosition{
 struct NumberSign(i32, HashSet<SignWithPosition>);
 
 #[derive(Default)]
-pub struct Day3Of2023 {
+pub struct Solver {
     data: Vec<NumberSign>,
 }
 
@@ -30,7 +30,7 @@ fn check_neighbors_in_grid(grid: &Grid<char>, point: Point) -> HashSet<SignWithP
     neighbors
 }
 
-impl Day for Day3Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         let rows = data.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
         let grid = Grid::try_from(rows.as_slice()).unwrap();
@@ -95,14 +95,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day3Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "4361");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day3Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "467835");
     }

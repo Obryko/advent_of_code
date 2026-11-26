@@ -127,12 +127,12 @@ impl Garden {
 
 
 #[derive(Default, Debug)]
-pub struct Day5Of2023 {
+pub struct Solver {
     seeds: Vec<i64>,
     garden: Garden,
 }
 
-impl Day for Day5Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         let (seeds, categories) = data.split_once('\n').unwrap();
         self.seeds = (seeds[7..]).split_whitespace().map(|v| v.parse().unwrap()).collect();
@@ -205,14 +205,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day5Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "35");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day5Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "46");
     }

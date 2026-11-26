@@ -88,11 +88,11 @@ impl From<&str> for Game {
 }
 
 #[derive(Default, Debug)]
-pub struct Day2Of2023 {
+pub struct Solver {
     data: Vec<Game>,
 }
 
-impl Day for Day2Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(Game::from).collect();
     }
@@ -114,14 +114,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day2Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "8");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day2Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "2286");
     }

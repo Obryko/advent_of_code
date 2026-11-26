@@ -75,17 +75,17 @@ impl Pipe {
 }
 
 #[derive(Default)]
-pub struct Day10Of2023 {
+pub struct Solver {
     data: Grid<Pipe>,
 }
 
-impl Debug for Day10Of2023 {
+impl Debug for Solver {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self.data)
     }
 }
 
-impl Day10Of2023 {
+impl Solver {
     fn get_start_position(&self) -> Point {
         self.data.positions().find(|point| self.data.get(*point).is_some_and(|pipe| pipe.is_start)).unwrap()
     }
@@ -145,7 +145,7 @@ fn is_point_in_polygon(point: Point, vertices: &[Point]) -> bool {
     is_inside
 }
 
-impl Day for Day10Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| {
             line.chars().map(Pipe::from_char).collect::<Vec<_>>()
@@ -181,42 +181,42 @@ mod tests {
 
     #[test]
     fn task_1_1() {
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task1(), "4");
     }
 
     #[test]
     fn task_1_2() {
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_2.to_string());
         assert_eq!(day.task1(), "4");
     }
 
     #[test]
     fn task_1_3() {
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_3.to_string());
         assert_eq!(day.task1(), "8");
     }
 
     #[test]
     fn task_1_4() {
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_4.to_string());
         assert_eq!(day.task1(), "8");
     }
 
     #[test]
     fn task_2_1() {
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_1.to_string());
         assert_eq!(day.task2(), "1");
     }
 
     #[test]
     fn task_2_5() {
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_5.to_string());
         assert_eq!(day.task2(), "4");
     }
@@ -224,7 +224,7 @@ mod tests {
     #[test]
     fn task_2_6() {
         let input = ".F----7F7F7F7F-7....\n.|F--7||||||||FJ....\n.||.FJ||||||||L7....\nFJL7L7LJLJ||LJ.L-7..\nL--J.L7...LJS7F-7L7.\n....F-J..F7FJ|L7L7L7\n....L7.F7||L7|.L7L7|\n.....|FJLJ|FJ|F7|.LJ\n....FJL-7.||.||||...\n....L---J.LJ.LJLJ...";
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(input.to_string());
         assert_eq!(day.task2(), "8");
     }
@@ -232,7 +232,7 @@ mod tests {
     #[test]
     fn task_2_7() {
         let input = "FF7FSF7F7F7F7F7F---7\nL|LJ||||||||||||F--J\nFL-7LJLJ||||||LJL-77\nF--JF--7||LJLJ7F7FJ-\nL---JF-JLJ.||-FJLJJ7\n|F|F-JF---7F7-L7L|7|\n|FFJF7L7F-JF7|JL---7\n7-L-JL7||F7|L7F-7F7|\nL.L7LFJ|||||FJL7||LJ\nL7JLJL-JLJLJL--JLJ.L";
-        let mut day = Day10Of2023::default();
+        let mut day = Solver::default();
         day.parse(input.to_string());
         assert_eq!(day.task2(), "10");
     }

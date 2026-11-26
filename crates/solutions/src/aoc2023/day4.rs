@@ -43,11 +43,11 @@ impl From<(&str, &str)> for BingoCard {
 }
 
 #[derive(Default, Debug)]
-pub struct Day4Of2023 {
+pub struct Solver {
     data: Vec<BingoCard>,
 }
 
-impl Day for Day4Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| {
             let (_, card) = line.split_once(':').unwrap();
@@ -91,14 +91,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day4Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "13");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day4Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "30");
     }

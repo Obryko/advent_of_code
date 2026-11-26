@@ -3,11 +3,11 @@ use std::ops::Add;
 use aoc_core::Day;
 
 #[derive(Default)]
-pub struct Day3Of2022 {
+pub struct Solver {
     data: Vec<(String, String)>,
 }
 
-impl Day3Of2022 {
+impl Solver {
     fn get_all_from_rucksack(&self, index: usize) -> String {
         self.data
             .get(index)
@@ -28,7 +28,7 @@ fn match_to_value(value: char) -> u32 {
     }
 }
 
-impl Day for Day3Of2022 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data
             .split('\n')
@@ -80,14 +80,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day3Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "157");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day3Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "70");
     }

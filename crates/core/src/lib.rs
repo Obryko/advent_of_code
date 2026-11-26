@@ -1,3 +1,8 @@
 mod day;
-mod year_macro;
-pub use day::{Day, Part, RegisteredDay};
+pub mod registry;
+mod part;
+pub mod execution;
+pub mod year;
+
+pub use day::{Day, RegisteredDay};
+pub use part::{Part, PartResult};

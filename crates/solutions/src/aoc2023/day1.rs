@@ -1,7 +1,7 @@
 use aoc_core::Day;
 
 #[derive(Default)]
-pub struct Day1Of2023 {
+pub struct Solver {
     data: Vec<String>,
 }
 
@@ -18,7 +18,7 @@ const DIGITS: [(&str, u32); 10] = [
     ("nine", 9),
 ];
 
-impl Day1Of2023 {
+impl Solver {
     fn calibration_value(line: &str) -> u32 {
             let first = line
                 .chars()
@@ -58,7 +58,7 @@ impl Day1Of2023 {
     }
 }
 
-impl Day for Day1Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data.lines().map(|line| line.to_string()).collect();
     }
@@ -82,7 +82,7 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day1Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_1.to_string());
 
         assert_eq!(day.task1(), "142");
@@ -90,7 +90,7 @@ mod tests {
 
     #[test]
     fn task_2() {
-        let mut day = Day1Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT_2.to_string());
 
         assert_eq!(day.task2(), "281");

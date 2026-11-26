@@ -4,7 +4,8 @@ use std::fs;
 use std::path::PathBuf;
 
 use reqwest::blocking::Client;
-const INPUT_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/inputs");
+const INPUT_DIR: &str =
+    concat!(env!("CARGO_MANIFEST_DIR"), "/../../inputs");
 
 fn read_day_input(year: usize, day: usize) -> Result<String, Box<dyn Error>> {
     let client = Client::new();

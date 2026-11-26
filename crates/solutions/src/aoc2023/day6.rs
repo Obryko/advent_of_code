@@ -48,12 +48,12 @@ impl Race {
 }
 
 #[derive(Default, Debug)]
-pub struct Day6Of2023 {
+pub struct Solver {
     races: Vec<Race>,
     race: Race,
 }
 
-impl Day6Of2023 {
+impl Solver {
     fn parse_line(line: &str) -> Vec<i64> {
         line.split_once(':')
             .map(|(_, values)| values
@@ -94,7 +94,7 @@ impl Day6Of2023 {
     }
 }
 
-impl Day for Day6Of2023 {
+impl Day for Solver {
 
     fn parse(&mut self, data: String) {
         let (times, distances) = data.split_once('\n').expect("Invalid input");
@@ -123,14 +123,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day6Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "288");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day6Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "71503");
     }

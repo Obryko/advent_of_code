@@ -1,12 +1,12 @@
 use aoc_core::Day;
 
 #[derive(Default)]
-pub struct Day1Of2022 {
+pub struct Solver {
     data: Vec<i32>,
 }
 
 
-impl Day for Day1Of2022 {
+impl Day for Solver {
 
     fn parse(&mut self, data: String) {
         self.data = data
@@ -38,14 +38,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day1Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "24000");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day1Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "45000");
     }

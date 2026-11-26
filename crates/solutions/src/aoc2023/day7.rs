@@ -145,11 +145,11 @@ impl Ord for Hand {
 
 
 #[derive(Debug, Default)]
-pub struct Day7Of2023 {
+pub struct Solver {
     data: Vec<Hand>,
 }
 
-impl Day7Of2023 {
+impl Solver {
      fn total_winnings(data: &[Hand]) -> i32 {
          data.iter().enumerate()
              .map(|(i, hand)| (i as i32 + 1) * hand.bid)
@@ -157,7 +157,7 @@ impl Day7Of2023 {
      }
 }
 
-impl Day for Day7Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data.lines()
             .map(|line| line.split_once(' ').map(Hand::from).unwrap())
@@ -186,14 +186,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day7Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "6440");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day7Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "5905");
     }

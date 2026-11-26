@@ -31,11 +31,11 @@ impl Pair {
 }
 
 #[derive(Default)]
-pub struct Day4Of2022 {
+pub struct Solver {
     data: Vec<Pair>,
 }
 
-impl Day for Day4Of2022 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         self.data = data
             .lines()
@@ -69,14 +69,14 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day4Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "2");
     }
 
     #[test]
     fn task_2() {
-        let mut day = Day4Of2022::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task2(), "4");
     }

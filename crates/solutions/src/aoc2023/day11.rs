@@ -29,18 +29,18 @@ impl Space {
 }
 
 #[derive(Debug, Default)]
-pub struct Day11Of2023 {
+pub struct Solver {
     data: Grid<Space>,
 }
 
-impl Display for Day11Of2023 {
+impl Display for Solver {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.data)
     }
 }
 
 
-impl Day11Of2023 {
+impl Solver {
 
     fn empty_rows(&self) -> Vec<usize> {
         (0..self.data.height())
@@ -124,7 +124,7 @@ impl Day11Of2023 {
 }
 
 
-impl Day for Day11Of2023 {
+impl Day for Solver {
     fn parse(&mut self, data: String) {
         let mut galaxy_index = 1;
         self.data = data.lines()
@@ -156,20 +156,20 @@ mod tests {
 
     #[test]
     fn task_1() {
-        let mut day = Day11Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.task1(), "374");
     }
 
     #[test]
     fn task_2_10() {
-        let mut day = Day11Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.solve(10), 1030);
     }
     #[test]
     fn task_2_100() {
-        let mut day = Day11Of2023::default();
+        let mut day = Solver::default();
         day.parse(INPUT.to_string());
         assert_eq!(day.solve(100), 8410);
     }
