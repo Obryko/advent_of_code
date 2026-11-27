@@ -28,3 +28,14 @@ impl Display for Part {
         write!(f, "{}", *self as u8)
     }
 }
+
+impl TryFrom<u8> for Part {
+    type Error = u8;
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            1 => Ok(Self::One),
+            2 => Ok(Self::Two),
+            _ => Err(value),
+        }
+    }
+}

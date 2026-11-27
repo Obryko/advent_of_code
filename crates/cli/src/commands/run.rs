@@ -1,8 +1,12 @@
+use crate::commands::result::CommandOutput;
 use crate::commands::{Command, CommandResult};
-use crate::output;
+use crate::error::{CommandError, DayError};
+use crate::report::execution::{DayReport, ExecutionReport};
 use aoc_client::inputs::get_day_input;
+use aoc_core::{Part, PartResult, RegisteredDay};
 use aoc_solutions::REGISTRY;
 use clap::Args;
+use clap::error::ErrorKind;
 
 #[derive(Args)]
 pub struct Run {
@@ -15,37 +19,89 @@ pub struct Run {
     /// Part to run (1 or 2) [default: run both]
     #[arg(short, long,value_parser = clap::value_parser!(u8).range(1..=2))]
     part: Option<u8>,
+
+    /// Run all registered days
+    #[arg(long, conflicts_with_all(["day", "part"]))]
+    all: bool,
 }
 
 impl Command for Run {
     fn execute(self) -> CommandResult {
+        let part = self.part.map(Part::try_from).transpose().map_err(CommandError::InvalidPart)?;
+
+        let days = self.resolve_days()?;
+
+        let results = days
+            .into_iter()
+            .map(|day| DayReport {
+                year: day.year,
+                day: day.day,
+                outcome: Self::execute_day(day, part),
+            })
+            .collect();
+
+        Ok(CommandOutput::Execution(ExecutionReport {
+            days: results,
+        }))
+    }
+}
+
+impl Run {
+    pub fn validate(&self) -> Result<(), clap::Error> {
+        if self.year.is_some() && self.part.is_some() && self.day.is_none() {
+            return Err(clap::Error::raw(
+                ErrorKind::MissingRequiredArgument,
+                "--day is required when using --year with --part",
+            ));
+        }
+
+        Ok(())
+    }
+    fn resolve_days(&self) -> Result<Vec<&'static RegisteredDay>, CommandError> {
+        if self.all {
+            let mut days: Vec<_> = REGISTRY
+                .iter()
+                .filter(|day| self.year.is_none_or(|year| day.year == year))
+                .collect();
+
+            if days.is_empty() {
+                return Err(match self.year {
+                    Some(year) => CommandError::YearNotFound { year },
+                    None => CommandError::EmptyRegistry,
+                });
+            }
+
+            days.sort_unstable_by_key(|day| (day.year, day.day));
+
+            return Ok(days);
+        }
+
         let year_number = self
             .year
             .or_else(|| REGISTRY.latest_year())
-            .ok_or_else(|| "No latest year found.".to_string())?;
+            .ok_or(CommandError::EmptyRegistry)?;
 
         let day_number = self
             .day
             .map(usize::from)
             .or_else(|| REGISTRY.latest_day(year_number))
-            .ok_or_else(|| format!("Year {year_number} has no implemented days."))?;
-
-        let task_number = match self.part {
-            Some(1) => Some(aoc_core::Part::One),
-            Some(2) => Some(aoc_core::Part::Two),
-            _ => None,
-        };
+            .ok_or(CommandError::YearNotFound { year: year_number })?;
 
         let day = REGISTRY
             .find(year_number, day_number)
-            .ok_or_else(|| format!("Day {day_number} for year {year_number} not found."))?;
+            .ok_or(CommandError::DayNotFound {
+                year: year_number,
+                day: day_number,
+            })?;
 
-        let input = get_day_input(year_number, day_number)?;
+        Ok(vec![day])
+    }
 
-        let results = day.run(input, task_number);
+    fn execute_day(day: &RegisteredDay, part: Option<Part>) -> Result<Vec<PartResult>, DayError> {
+        let input = get_day_input(day.year, day.day).map_err(DayError::Input)?;
 
-        output::execution::print_day(year_number, day_number, &results);
+        let results = day.run(input, part);
 
-        Ok(())
+        Ok(results)
     }
 }

@@ -61,6 +61,7 @@ dependencies = [
  "aoc-solutions",
  "clap",
  "dotenvy",
+ "thiserror",
 ]
 
 [[package]]

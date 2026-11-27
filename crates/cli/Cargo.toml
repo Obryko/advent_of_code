@@ -11,6 +11,7 @@ aoc-client.workspace = true
 aoc-solutions.workspace = true
 clap = { version = "4", features = ['derive'] }
 dotenvy = "0.15"
+thiserror = "2.0.21"
 
 [lints]
 workspace = true
