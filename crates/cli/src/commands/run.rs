@@ -1,3 +1,4 @@
+use std::panic::catch_unwind;
 use crate::commands::result::CommandOutput;
 use crate::commands::{Command, CommandResult};
 use crate::error::{CommandError, DayError};
@@ -98,10 +99,34 @@ impl Run {
     }
 
     fn execute_day(day: &RegisteredDay, part: Option<Part>) -> Result<Vec<PartResult>, DayError> {
-        let input = get_day_input(day.year, day.day).map_err(DayError::Input)?;
 
-        let results = day.run(input, part);
+        let input = get_day_input(day.year, day.day)
+            .map_err(DayError::Input)?;
 
-        Ok(results)
+        let previous_hook = std::panic::take_hook();
+
+        std::panic::set_hook(Box::new(|_| {}));
+
+        let result = std::panic::catch_unwind(|| {
+            day.run(input, part)
+        }).map_err(|payload| {
+            let message = if let Some(message) =
+                payload.downcast_ref::<String>()
+            {
+                message.clone()
+            } else if let Some(message) =
+                payload.downcast_ref::<&str>()
+            {
+                (*message).to_owned()
+            } else {
+                "Unknown panic payload".to_owned()
+            };
+
+            DayError::Panic(message)
+        })?;
+
+        std::panic::set_hook(previous_hook);
+
+        Ok(result)
     }
 }
