@@ -1,4 +1,4 @@
-aoc_toolkit_core::year! {
+aoc_toolkit::year! {
     2023,
     1 => day1,
     2 => day2,

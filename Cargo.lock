@@ -61,30 +61,16 @@ name = "aoc-solutions"
 version = "0.0.0"
 dependencies = [
  "aoc-common",
- "aoc-toolkit-core",
- "aoc-toolkit-runner",
+ "aoc-toolkit",
 ]
 
 [[package]]
-name = "aoc-toolkit-client"
+name = "aoc-toolkit"
 version = "0.1.0"
 dependencies = [
- "dotenvy",
- "reqwest",
-]
-
-[[package]]
-name = "aoc-toolkit-core"
-version = "0.1.0"
-
-[[package]]
-name = "aoc-toolkit-runner"
-version = "0.1.0"
-dependencies = [
- "aoc-toolkit-client",
- "aoc-toolkit-core",
  "clap",
  "dotenvy",
+ "reqwest",
  "thiserror",
 ]
 

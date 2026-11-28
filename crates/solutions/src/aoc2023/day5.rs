@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use aoc_toolkit_core::Day;
+use aoc_toolkit::core::Day;
 use aoc_common::intervals::Interval;
 
 #[derive(Debug, Copy, Clone)]

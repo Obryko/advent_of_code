@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display, Formatter};
 use aoc_common::grid::Grid;
 use aoc_common::point::Point;
-use aoc_toolkit_core::Day;
+use aoc_toolkit::core::Day;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Space {

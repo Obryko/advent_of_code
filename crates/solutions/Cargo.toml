@@ -8,8 +8,7 @@ description.workspace = true
 [dependencies]
 aoc-common.workspace = true
 
-aoc-toolkit-core.workspace = true
-aoc-toolkit-runner.workspace = true
+aoc-toolkit.workspace = true
 
 [lints]
 workspace = true

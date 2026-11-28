@@ -1,7 +1,7 @@
-use std::process::ExitCode;
-use aoc_toolkit_runner::run;
 use aoc_solutions::REGISTRY;
+use aoc_toolkit::runner;
+use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    run(&REGISTRY)
+    runner::run(&REGISTRY)
 }

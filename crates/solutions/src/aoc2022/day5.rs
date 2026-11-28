@@ -1,4 +1,4 @@
-use aoc_toolkit_core::Day;
+use aoc_toolkit::core::Day;
 
 struct Command(usize, usize, usize);
 

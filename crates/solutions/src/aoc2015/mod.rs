@@ -1,3 +1,3 @@
-aoc_toolkit_core::year! {
+aoc_toolkit::year! {
     2015,
 }

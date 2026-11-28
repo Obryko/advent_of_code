@@ -11,8 +11,11 @@ description = "Advent of Code solutions"
 [workspace.dependencies]
 aoc-common = { path = "crates/common" }
 
-aoc-toolkit-core = { path = "../aoc-toolkit/crates/core" }
-aoc-toolkit-runner = { path = "../aoc-toolkit/crates/runner" }
+aoc-toolkit = {
+    path = "../aoc-toolkit",
+    default-features = false,
+    features = ["runner"]
+}
 
 [workspace.lints]
 rust = {unsafe_code = "forbid" }
