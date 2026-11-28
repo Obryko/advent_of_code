@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-use aoc_core::Day;
+use aoc_toolkit_core::Day;
 
 #[derive(Default)]
 pub struct Solver {

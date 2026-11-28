@@ -1,4 +1,4 @@
 [alias]
 lint = "clippy --workspace --all-targets --all-features"
 lint-fix = "clippy --workspace --all-targets --all-features --fix --allow-dirty"
-aoc = "run --package aoc-cli --bin aoc --"
+aoc = "run -p aoc-solutions --bin aoc-local --"

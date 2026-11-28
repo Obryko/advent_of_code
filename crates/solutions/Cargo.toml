@@ -6,8 +6,14 @@ authors.workspace = true
 description.workspace = true
 
 [dependencies]
-aoc-core.workspace = true
 aoc-common.workspace = true
+
+aoc-toolkit-core.workspace = true
+aoc-toolkit-runner.workspace = true
 
 [lints]
 workspace = true
+
+[[bin]]
+name = "aoc-local"
+path = "src/main.rs"

@@ -53,31 +53,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc-cli"
-version = "0.0.0"
-dependencies = [
- "aoc-client",
- "aoc-core",
- "aoc-solutions",
- "clap",
- "dotenvy",
- "thiserror",
-]
-
-[[package]]
-name = "aoc-client"
-version = "0.0.0"
-dependencies = [
- "dotenvy",
- "reqwest",
-]
-
-[[package]]
 name = "aoc-common"
-version = "0.0.0"
-
-[[package]]
-name = "aoc-core"
 version = "0.0.0"
 
 [[package]]
@@ -85,7 +61,31 @@ name = "aoc-solutions"
 version = "0.0.0"
 dependencies = [
  "aoc-common",
- "aoc-core",
+ "aoc-toolkit-core",
+ "aoc-toolkit-runner",
+]
+
+[[package]]
+name = "aoc-toolkit-client"
+version = "0.1.0"
+dependencies = [
+ "dotenvy",
+ "reqwest",
+]
+
+[[package]]
+name = "aoc-toolkit-core"
+version = "0.1.0"
+
+[[package]]
+name = "aoc-toolkit-runner"
+version = "0.1.0"
+dependencies = [
+ "aoc-toolkit-client",
+ "aoc-toolkit-core",
+ "clap",
+ "dotenvy",
+ "thiserror",
 ]
 
 [[package]]

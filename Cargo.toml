@@ -5,14 +5,14 @@ resolver = "3"
 [workspace.package]
 version = "0.0.0"
 edition = "2024"
-authors = ["Kacper 'Obryk Obrycki"]
+authors = ["Kacper 'Obryk' Obrycki"]
 description = "Advent of Code solutions"
 
 [workspace.dependencies]
 aoc-common = { path = "crates/common" }
-aoc-core = { path = "crates/core" }
-aoc-client = { path = "crates/client" }
-aoc-solutions = { path = "crates/solutions" }
+
+aoc-toolkit-core = { path = "../aoc-toolkit/crates/core" }
+aoc-toolkit-runner = { path = "../aoc-toolkit/crates/runner" }
 
 [workspace.lints]
 rust = {unsafe_code = "forbid" }

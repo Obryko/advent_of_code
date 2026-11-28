@@ -2,7 +2,7 @@ use std::fmt::{Debug, Formatter};
 use aoc_common::direction::Direction;
 use aoc_common::grid::Grid;
 use aoc_common::point::Point;
-use aoc_core::Day;
+use aoc_toolkit_core::Day;
 
 
 #[derive(Debug, PartialEq)]

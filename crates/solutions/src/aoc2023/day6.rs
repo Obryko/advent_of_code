@@ -1,5 +1,5 @@
 use aoc_common::intervals::Interval;
-use aoc_core::Day;
+use aoc_toolkit_core::Day;
 
 
 
